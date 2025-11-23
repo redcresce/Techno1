@@ -1,139 +1,167 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تكنو تل</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>تكنو تل – متجر الموبايلات</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #f3f5f7;
+        }
+
+        /* --- الهيدر --- */
+        .navbar {
+            background: linear-gradient(90deg, #007bff, #0056d6);
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            color: #fff !important;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* --- الهيرو --- */
+        .hero {
+            background: linear-gradient(135deg, #0056d6, #0090ff);
+            color: #fff;
+            padding: 70px 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .hero h1 {
+            font-size: 40px;
+            font-weight: 700;
+        }
+        .hero p {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        /* --- بطاقات المنتجات --- */
+        .product-card {
+            border-radius: 18px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: .3s;
+        }
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        .product-card img {
+            border-bottom: 1px solid #eee;
+        }
+        .price {
+            font-size: 22px;
+            color: #e91e63;
+            font-weight: bold;
+        }
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            font-size: 18px;
+        }
+        .btn-whatsapp:hover {
+            background: #1ebe5d;
+            color: #fff;
+        }
+
+        /* --- الفوتر --- */
+        footer {
+            background: #0d6efd;
+            color: #fff;
+            padding: 20px;
+            margin-top: 50px;
+            text-align: center;
+        }
+    </style>
 </head>
-<body class="bg-light">
-  <nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container d-flex justify-content-between align-items-center">
-      <span class="navbar-brand mb-0 h1">تكنو تل -TECHNO TEL</span>
-      <input id="search" type="text" class="form-control w-50" placeholder="ابحث عن منتج..." oninput="searchProducts()" />
-    </div>
-  </nav>  <div class="container">
-    <div class="row" id="product-list"><!-- مثال على منتج -->
-  <div class="col-md-4 mb-4">
-    <div class="card shadow-sm">
-      <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="هاتف">
-      <div class="card-body text-center">
-        <h5 class="card-title">Samsung A54</h5>
-        <p class="card-text text-success fw-bold">السعر: 1,500,000 ل.س</p>
-      </div>
-    </div>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container">
+    <a class="navbar-brand" href="#">تكنو تل</a>
   </div>
+</nav>
 
-  <!-- انسخ الكتلة فوق لإضافة منتجات جديدة -->
-
+<!-- Hero -->
+<div class="container">
+    <div class="hero shadow">
+        <h1>مرحباً بكم في تكنو تل</h1>
+        <p>أحدث الموبايلات – أفضل الأسعار – اطلب عبر الواتساب مباشرة</p>
+    </div>
 </div>
 
-  </div>  <footer class="text-center py-4 mt-4 bg-dark text-white">
-    <p>© 2025 MAZEN</p>
-  </footer>
-  <script>
-    // اسم ملف التخزين داخل GitHub
-    const DATA_URL = "products.json";let products = [];
+<!-- Products -->
+<div class="container mt-5">
+    <div class="row g-4">
 
-async function loadProducts() {
-  try {
-    const response = await fetch(DATA_URL + "?t=" + Date.now());
-    products = await response.json();
-  } catch (e) {
-    products = [];
-  }
-  displayProducts(products);
-}
-
-function displayProducts(list) {
-  const container = document.getElementById("product-list");
-  container.innerHTML = "";
-  list.forEach(p => {
-    container.innerHTML += `
-      <div class="col-md-4 mb-4">
-        <div class="card shadow-sm">
-          <img src="${p.img}" class="card-img-top" alt="منتج">
-          <div class="card-body text-center">
-            <h5 class="card-title">${p.name}</h5>
-            <p class="card-text text-success fw-bold">السعر: ${p.price} ل.س</p>
-          </div>
+        <!-- Product 1 -->
+        <div class="col-md-4">
+            <div class="product-card">
+                <img src="images/s22.jpg" class="img-fluid" alt="Samsung S22">
+                <div class="p-3">
+                    <h4>Samsung S22</h4>
+                    <div class="price">550$</div>
+                    <a href="https://wa.me/+963934090901?text=أريد%20شراء%20Samsung%20S22"
+                       target="_blank"
+                       class="btn btn-whatsapp w-100 mt-3">
+                        اطلب عبر واتساب
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>`;
-  });
-}
 
-function searchProducts() {
-  const term = document.getElementById("search").value.trim().toLowerCase();
-  const filtered = products.filter(p => p.name.toLowerCase().includes(term));
-  displayProducts(filtered);
-}
+        <!-- Product 2 -->
+        <div class="col-md-4">
+            <div class="product-card">
+                <img src="images/iphone14.jpg" class="img-fluid" alt="iPhone 14">
+                <div class="p-3">
+                    <h4>iPhone 14</h4>
+                    <div class="price">800$</div>
+                    <a href="https://wa.me/+963934090901?text=أريد%20شراء%20iPhone%2014"
+                       target="_blank"
+                       class="btn btn-whatsapp w-100 mt-3">
+                        اطلب عبر واتساب
+                    </a>
+                </div>
+            </div>
+        </div>
 
-function addProduct() {
-  const name = prompt("اسم المنتج:");
-  const price = prompt("سعر المنتج:");
-  const img = prompt("رابط الصورة:", "https://via.placeholder.com/300x200");
+        <!-- Product 3 -->
+        <div class="col-md-4">
+            <div class="product-card">
+                <img src="images/a54.jpg" class="img-fluid" alt="Samsung A54">
+                <div class="p-3">
+                    <h4>Samsung A54</h4>
+                    <div class="price">300$</div>
+                    <a href="https://wa.me/+963934090901?text="
+                       target="_blank"
+                       class="btn btn-whatsapp w-100 mt-3">
+                        اطلب عبر واتساب
+                    </a>
+                </div>
+            </div>
+        </div>
 
-  if (!name || !price) return alert("الرجاء إدخال اسم وسعر المنتج");
-
-  products.push({ name, price, img });
-  saveProducts();
-}
-
-async function saveProducts() {
-  const content = JSON.stringify(products, null, 2);
-  const blob = new Blob([content], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "products.json";
-  a.click();
-  alert("تم تحديث الملف — ارفعه إلى GitHub لإكمال الحفظ.");
-  displayProducts(products);
-}
-
-loadProducts();
-
-  </script><button onclick="addProduct()" class="btn btn-primary position-fixed" style="bottom:20px; left:20px;">إضافة منتج</button>
-
-  <!-- زر تصوير المنتج --><button onclick="openCamera()" class="btn btn-success position-fixed" style="bottom:80px; left:20px;">تصوير منتج</button>
-
-  <!-- نافذة الكاميرا -->  <div id="cameraModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000c; align-items:center; justify-content:center;">
-    <div style="background:#fff; padding:20px; border-radius:15px; text-align:center; width:90%; max-width:400px;">
-      <video id="camera" autoplay playsinline style="width:100%; border-radius:12px;"></video>
-      <br><br>
-      <button class="btn btn-primary" onclick="takePhoto()">التقاط الصورة</button>
-      <button class="btn btn-danger mt-2" onclick="closeCamera()">إغلاق</button>
     </div>
-  </div>  <script>
-    // فتح الكاميرا
-    async function openCamera() {
-      document.getElementById('cameraModal').style.display = 'flex';
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      document.getElementById('camera').srcObject = stream;
-    }
+</div>
 
-    // إغلاق الكاميرا
-    function closeCamera() {
-      const cam = document.getElementById('camera');
-      if (cam.srcObject) {
-        cam.srcObject.getTracks().forEach(t => t.stop());
-      }
-      document.getElementById('cameraModal').style.display = 'none';
-    }
+<footer>
+    © 2025 تكنو تل — جميع الحقوق محفوظة
+</footer>
 
-    // التقاط الصورة
-    function takePhoto() {
-      const video = document.getElementById('camera');
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0);
-
-      const photoURL = canvas.toDataURL('image/jpeg');
-      closeCamera();
-
-      alert('📸 تم التقاط الصورة!
-انسخ هذا الرابط والصقه مكان صورة المنتج:
-' + photoURL);
-    }
-  </script></body>
+</body>
 </html>
