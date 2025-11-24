@@ -118,6 +118,355 @@ let ADMIN_PASSWORD = 't3chn0tel'; // غيّره فوراً في الكود أو 
 let categories = []; // array of {id: 'mobiles', label: 'موبايلات'}
 let products = [];
 const tokenKey = 'techno_admin_token_v1';
+let token = localStorage.getItem(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) || '';
+
+/* ---------- DOM ---------- */
+const syncStatus = document.getElementById('syncStatus');
+const statusBox = document.getElementById('statusBox');
+const categoriesList = document.getElementById('categoriesList');
+const pCategorySelect = document.getElementById('pCategory');
+const ghTokenInput = document.getElementById('ghToken');
+const listDiv = document.getElementById('list');
+
+/* ---------- Helpers ---------- */
+function setStatus(msg, ok=true) {
+  syncStatus.textContent = msg;
+  syncStatus.style.color = ok ? 'green' : 'red';
+  statusBox.innerHTML = `<div class="alert ${ok ? 'alert-success' : 'alert-danger'}">${msg}</div>`;
+  setTimeout(()=>{ statusBox.innerHTML = ''; }, 3500);
+}
+function showTokenHelp(){
+  alert('لإنشاء GitHub Personal Access Token:\n1) GitHub -> Settings -> Developer settings -> Personal access tokens -> Tokens (classic) -> Generate new token.\n2) اختر scope: public_repo (لو الريبو عام) أو repo لو خاص.\n3) انسخ التوكن والصقه هنا. التوكن يخزن محلياً فقط.');
+}
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ---------- Login ---------- */
+function login() {
+  const v = document.getElementById('pwd').value;
+  if (v === ADMIN_PASSWORD) {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('adminUI').style.display = 'block';
+    ghTokenInput.value = token || '';
+    initAdmin();
+  } else alert('كلمة المرور خاطئة');
+}
+
+/* ---------- Token management ---------- */
+function saveToken(){
+  const t = ghTokenInput.value.trim();
+  if(!t){ alert('أدخل التوكن أولاً'); return; }
+  localStorage.setItem(tokenKey, t);
+  token = t;
+  setStatus('التوكن محفوظ محلياً. جاهز للمزامنة.', true);
+  initAdmin(); // reload data with token
+}
+function clearToken(){
+  localStorage.removeItem(tokenKey);
+  token = '';
+  ghTokenInput.value = '';
+  setStatus('تم حذف التوكن من المتصفح.', false);
+}
+
+/* ---------- GitHub helpers (GET content) ---------- */
+async function githubGetContent(path){
+  const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
+  const headers = token ? { Authorization: 'token ' + token } : {};
+  const res = await fetch(api + '?_=' + Date.now(), { headers });
+  if(res.status === 404) return null;
+  if(!res.ok) throw new Error('GitHub GET failed: ' + res.status);
+  const j = await res.json();
+  const sha = j.sha;
+  const content = atob(j.content.replace(/\n/g,'')); // utf-8 may need decoding
+  try { return { sha, data: JSON.parse(content) }; } catch(e){ return { sha, raw: content }; }
+}
+
+/* ---------- GitHub PUT (create/update file) ---------- */
+async function githubPutContent(path, contentStr, message, sha=null){
+  const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
+  const body = { message, content: btoa(unescape(encodeURIComponent(contentStr))) };
+  if(sha) body.sha = sha;
+  const res = await fetch(api, {
+    method: 'PUT',
+    headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok) {
+    const txt = await res.text();
+    throw new Error('GitHub PUT failed: ' + res.status + ' - ' + txt);
+  }
+  return await res.json();
+}
+
+/* ---------- Upload binary file (image) to images/ ---------- */
+function arrayBufferToBase64(buffer){
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+async function uploadImage(){
+  const fileInput = document.getElementById('imageFile');
+  if(!fileInput.files || fileInput.files.length === 0){ alert('اختر ملف'); return; }
+  if(!token){ alert('ضع توكن GitHub أولاً وحفظه'); return; }
+
+  const file = fileInput.files[0];
+  const customName = (document.getElementById('imageFilename').value || '').trim();
+  const ext = file.name.split('.').pop().toLowerCase();
+  const safeExt = ext || 'jpg';
+  const timestamp = Date.now();
+  const filename = customName ? customName : `${timestamp}-${file.name.replace(/\s+/g,'_')}`;
+  const path = `${IMAGES_FOLDER}/${filename}`;
+
+  try{
+    setStatus('جارٍ رفع الصورة إلى GitHub...', true);
+
+    // read file as arraybuffer
+    const buffer = await file.arrayBuffer();
+    const base64 = arrayBufferToBase64(buffer);
+
+    // prepare PUT body for binary file
+    const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
+    const message = `Upload image ${filename} via admin panel (${new Date().toISOString()})`;
+    const putBody = { message, content: base64 };
+
+    const resp = await fetch(api, {
+      method: 'PUT',
+      headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(putBody)
+    });
+
+    if(!resp.ok){
+      const txt = await resp.text();
+      throw new Error('فشل رفع الصورة: ' + resp.status + ' - ' + txt);
+    }
+
+    const j = await resp.json();
+    setStatus('تم رفع الصورة بنجاح. Commit: ' + (j.commit && j.commit.sha ? j.commit.sha.substring(0,7) : ''), true);
+
+    // image URL on GitHub Pages:
+    const imageUrl = `https://${GITHUB_USER}.github.io/${GITHUB_REPO}/${IMAGES_FOLDER}/${encodeURIComponent(filename)}`;
+    // ضع الرابط في حقل الصورة جاهز للاستخدام
+    document.getElementById('pImage').value = imageUrl;
+    // Clear input
+    fileInput.value = '';
+    document.getElementById('imageFilename').value = '';
+    // Refresh products/categories from GitHub to reflect new file
+    await loadAllFromGitHub();
+    return imageUrl;
+
+  }catch(err){
+    console.error(err);
+    setStatus('خطأ أثناء رفع الصورة: ' + (err.message||err), false);
+    alert('فشل رفع الصورة: ' + (err.message||err));
+    throw err;
+  }
+}
+
+/* ---------- Load products & categories from GitHub ---------- */
+async function loadAllFromGitHub(){
+  try{
+    // load categories
+    const catRes = await githubGetContent(CATEGORIES_PATH);
+    if(catRes && catRes.data) categories = catRes.data;
+    else categories = [ { id:'mobiles', label:'موبايلات' }, { id:'bluetooth', label:'سماعات بلوتوث' }, { id:'cables', label:'كابلات' }, { id:'chargers', label:'شواحن' } ];
+
+    // load products
+    const prodRes = await githubGetContent(PRODUCTS_PATH);
+    products = (prodRes && prodRes.data) ? prodRes.data : [];
+
+    renderCategories();
+    renderList();
+    setStatus('تم تحميل البيانات من GitHub', true);
+  }catch(err){
+    console.error(err);
+    setStatus('فشل تحميل من GitHub - سيعمل محلياً', false);
+    // use defaults
+    if(!categories || categories.length===0) categories = [ { id:'mobiles', label:'موبايلات' }, { id:'bluetooth', label:'سماعات بلوتوث' }, { id:'cables', label:'كابلات' }, { id:'chargers', label:'شواحن' } ];
+    if(!products) products = [];
+    renderCategories();
+    renderList();
+  }
+}
+
+/* ---------- Render categories UI ---------- */
+function renderCategories(){
+  // list view
+  categoriesList.innerHTML = '';
+  categories.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'd-flex align-items-center justify-content-between mb-1';
+    div.innerHTML = `<div><b>${escapeHtml(c.label)}</b> <small class="muted">(${escapeHtml(c.id)})</small></div>
+      <div>
+        <button class="btn btn-sm btn-warning btn-small me-1" onclick="renameCategory(${i})">تعديل</button>
+        <button class="btn btn-sm btn-danger btn-small" onclick="deleteCategory(${i})">حذف</button>
+      </div>`;
+    categoriesList.appendChild(div);
+  });
+
+  // populate select
+  pCategorySelect.innerHTML = '';
+  categories.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id; opt.textContent = c.label;
+    pCategorySelect.appendChild(opt);
+  });
+}
+
+/* ---------- Categories CRUD ---------- */
+function addCategory(){
+  const id = (document.getElementById('newCategory').value || '').trim();
+  const label = (document.getElementById('newCategoryLabel').value || '').trim();
+  if(!id || !label) { alert('ادخل id والقسم بالعربية'); return; }
+  if(categories.some(c=>c.id === id)){ alert('القسم موجود سابقاً'); return; }
+  categories.push({ id, label });
+  renderCategories();
+  autoSyncCategories();
+  document.getElementById('newCategory').value = '';
+  document.getElementById('newCategoryLabel').value = '';
+}
+function renameCategory(i){
+  const c = categories[i];
+  const newLabel = prompt('التسمية العربية للقسم:', c.label);
+  if(newLabel === null) return;
+  const newId = prompt('الـ id للقسم (لا تغيّر إلا لو تعرف لماذا):', c.id);
+  if(newId === null) return;
+  categories[i] = { id: newId.trim(), label: newLabel.trim() };
+  renderCategories();
+  autoSyncCategories();
+}
+function deleteCategory(i){
+  if(!confirm('حذف القسم؟ المنتجات لا تُحذف لكن قد لا يظهر قسم لها.')) return;
+  categories.splice(i,1);
+  renderCategories();
+  autoSyncCategories();
+}
+
+/* ---------- Products CRUD ---------- */
+function renderList(){
+  listDiv.innerHTML = '';
+  const q = (document.getElementById('pSearch').value || '').toLowerCase();
+  const filtered = products.filter(p => {
+    return (!q) || (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q));
+  });
+  if(filtered.length === 0) {
+    listDiv.innerHTML = '<div class="text-muted">لا توجد منتجات للعرض.</div>';
+    return;
+  }
+  filtered.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'card p-2 mb-2';
+    div.innerHTML = `
+      <div class="row align-items-center">
+        <div class="col-2"><img src="${p.image}" class="img-thumb" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=64 height=48><rect width=100% height=100% fill=%23ddd/></svg>'" /></div>
+        <div class="col-6">
+          <b>${escapeHtml(p.name)}</b><br><small class="text-muted">${escapeHtml(p.price)} • ${escapeHtml(p.category)}</small><br>
+          <small class="muted">${p.description ? escapeHtml(p.description) : ''}</small>
+        </div>
+        <div class="col-4 text-end">
+          <button class="btn btn-sm btn-warning btn-small me-1" onclick="editProduct(${i})">تعديل</button>
+          <button class="btn btn-sm btn-danger btn-small" onclick="deleteProduct(${i})">حذف</button>
+        </div>
+      </div>`;
+    listDiv.appendChild(div);
+  });
+}
+
+function addProduct(){
+  const name = (document.getElementById('pName').value || '').trim();
+  const price = (document.getElementById('pPrice').value || '').trim();
+  const image = (document.getElementById('pImage').value || '').trim();
+  const categoryVal = (document.getElementById('pCategory').value || '').trim();
+  if(!name || !image){ alert('الاسم والرابط للصور مطلوبان'); return; }
+  products.push({ name, price, image, category: categoryVal, description: '' });
+  renderList();
+  autoSyncProducts();
+  document.getElementById('pName').value = '';
+  document.getElementById('pPrice').value = '';
+  document.getElementById('pImage').value = '';
+}
+
+function editProduct(i){
+  const p = products[i];
+  const newName = prompt('اسم المنتج:', p.name);
+  if(newName === null) return;
+  const newPrice = prompt('السعر:', p.price);
+  if(newPrice === null) return;
+  const newImage = prompt('رابط الصورة:', p.image);
+  if(newImage === null) return;
+  const newCat = prompt('القسم (اكتب id القسم):', p.category);
+  if(newCat === null) return;
+  const newDesc = prompt('الوصف (اختياري):', p.description || '');
+  if(newDesc === null) return;
+  products[i] = { name: newName.trim(), price: newPrice.trim(), image: newImage.trim(), category: newCat.trim(), description: newDesc.trim() };
+  renderList();
+  autoSyncProducts();
+}
+
+function deleteProduct(i){
+  if(!confirm('حذف المنتج نهائياً؟')) return;
+  products.splice(i,1);
+  renderList();
+  autoSyncProducts();
+}
+
+/* ---------- Auto sync (debounced) ---------- */
+let autoTimer = null;
+function autoSyncProducts(){
+  if(!token){ setStatus('التوكن غير موجود. احفظ التوكن للمزامنة.', false); return; }
+  if(autoTimer) clearTimeout(autoTimer);
+  autoTimer = setTimeout(()=>{ pushProductsToGitHub().catch(()=>{}); }, 800);
+}
+function autoSyncCategories(){
+  if(!token){ setStatus('التوكن غير موجود. احفظ التوكن للمزامنة.', false); return; }
+  if(autoTimer) clearTimeout(autoTimer);
+  autoTimer = setTimeout(()=>{ pushCategoriesToGitHub().catch(()=>{}); }, 800);
+}
+
+/* ---------- Push products.json ---------- */
+async function pushProductsToGitHub(){
+  try{
+    setStatus('جارٍ مزامنة products.json ...', true);
+    // get current sha if exists
+    const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${PRODUCTS_PATH}`;
+    const headers = { Authorization: 'token ' + token };
+    const getResp = await fetch(api + '?_=' + Date.now(), { headers });
+    let sha = null;
+    if(getResp.status === 200){ const j = await getResp.json(); sha = j.sha; }
+    else if(getResp.status === 404) sha = null;
+    else if(getResp.status === 401 || getResp.status === 403) throw new Error('صلاحيات التوكن غير كافية أو توكن خاطئ.');
+    else { throw new Error('خطأ عند جلب SHA: ' + getResp.status); }
+
+    const bodyStr = JSON.stringify(products, null, 2);
+    const putBody = { message: `Auto-update products.json via admin (${new Date().toISOString()})`, content: btoa(unescape(encodeURIComponent(bodyStr))) };
+    if(sha) putBody.sha = sha;
+    const putResp = await fetch(api, { method:'PUT', headers: headers, body: JSON.stringify(putBody) });
+    if(!putResp.ok){ const txt = await putResp.text(); throw new Error('فشل رفع products.json: ' + putResp.status + ' - ' + txt); }
+    const putJson = await putResp.json();
+    setStatus('تمت مزامنة products.json — commit: ' + (putJson.commit && putJson.commit.sha ? putJson.commit.sha.substring(0,7) : ''), true);
+    return putJson;
+  }catch(err){ console.error(err); setStatus('فشل مزامنة products.json: ' + (err.message||err), false); throw err; }
+}
+
+/* ---------- Push categories.json ---------- */
+async function pushCategoriesToGitHub(){
+  try{
+    setStatus('جارٍ مزامنة categories.json ...', true);
+    const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${CATEGORIES_PATH}`;
+    const headers = { Authorization: 'token ' + token };
+    const getResp = await fetch(api + '?_=' + Date.now(), { headers });
+    let sha = null;
+    if(getResp.status === 200){ const j = await getResp.json(); sha = j.sha; }
+    else if(getResp.status === 404) sha = null;
+    else if(getResp.status === 401 || getResp.statuconst CATEGORIES_PATH = 'categories.json';
+const IMAGES_FOLDER = 'images';
+let ADMIN_PASSWORD = 't3chn0tel'; // غيّره فوراً في الكود أو بعد النسخ
+
+/* ---------- حالة محلية ---------- */
+let categories = []; // array of {id: 'mobiles', label: 'موبايلات'}
+let products = [];
+const tokenKey = 'techno_admin_token_v1';
 let token = localStorage.getItem(tokenKey) || '';
 
 /* ---------- DOM ---------- */
