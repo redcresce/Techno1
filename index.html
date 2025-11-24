@@ -9,14 +9,22 @@
 <style>
 body{
   font-family:'Cairo',sans-serif;
-  background:#fff0f0;
   margin:0;
   padding:0;
+  background: linear-gradient(-45deg, #f44336, #ff7961, #f06292, #ff8a80);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
 }
 
-/* Navbar */
+/* Animate background */
+@keyframes gradientBG {
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
 .navbar{
-  background:linear-gradient(90deg,#c62828,#b71c1c);
+  background:rgba(183,28,28,0.9);
   padding:20px 0;
   box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
@@ -26,9 +34,8 @@ body{
   font-weight:700;
 }
 
-/* Hero */
 .hero{
-  background:linear-gradient(135deg,#e53935,#d32f2f);
+  background:rgba(211,47,47,0.95);
   color:#fff;
   padding:60px 20px;
   border-radius:25px;
@@ -36,39 +43,35 @@ body{
   margin:20px;
   box-shadow:0 6px 20px rgba(0,0,0,0.15);
 }
-.hero h1{
-  font-size:40px;
-  font-weight:700;
-  margin-bottom:15px;
-}
-.hero p{
-  font-size:20px;
-}
+.hero h1{ font-size:40px; font-weight:700; margin-bottom:15px;}
+.hero p{ font-size:20px; }
 
-/* Search */
 #searchInput{
   border-radius:25px;
-  border:2px solid #c62828;
+  border:2px solid #b71c1c;
   padding:15px;
   font-size:18px;
   margin-top:20px;
   box-shadow:0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Filter buttons */
-.filter-btn{
-  background:#c62828;
+/* Section icons */
+.section-btn{
+  background:#b71c1c;
   color:#fff;
   border:none;
-  padding:12px 20px;
+  padding:10px 18px;
   border-radius:15px;
   margin:5px;
   font-size:16px;
   cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
   transition:.3s;
 }
-.filter-btn:hover{
-  background:#b71c1c;
+.section-btn:hover{
+  background:#7f0000;
   transform:translateY(-2px);
 }
 
@@ -107,13 +110,10 @@ body{
   border-radius:12px;
   transition:.3s;
 }
-.btn-whatsapp:hover{
-  background:#1ebe57;
-}
+.btn-whatsapp:hover{ background:#1ebe57; }
 
-/* Footer */
 footer{
-  background:#b71c1c;
+  background:#7f0000;
   color:#fff;
   padding:25px;
   margin-top:50px;
@@ -144,14 +144,14 @@ footer{
   <input id="searchInput" type="text" class="form-control form-control-lg text-center" placeholder="ابحث عن جهاز..." oninput="applyFilters()">
 </div>
 
-<!-- Filter Buttons -->
+<!-- Filter Buttons with icons -->
 <div class="container text-center mt-4">
-  <button class="filter-btn" onclick="setCategory('all')">كل المنتجات</button>
-  <button class="filter-btn" onclick="setCategory('mobiles')">موبايلات</button>
-  <button class="filter-btn" onclick="setCategory('bluetooth')">سماعات بلوتوث</button>
-  <button class="filter-btn" onclick="setCategory('cables')">كابلات</button>
-  <button class="filter-btn" onclick="setCategory('chargers')">شواحن</button>
-  <button class="filter-btn" onclick="setCategory('smartwatches')">ساعات ذكية</button>
+  <button class="section-btn" onclick="setCategory('all')">📦 كل المنتجات</button>
+  <button class="section-btn" onclick="setCategory('mobiles')">📱 موبايلات</button>
+  <button class="section-btn" onclick="setCategory('bluetooth')">🎧 سماعات بلوتوث</button>
+  <button class="section-btn" onclick="setCategory('cables')">🔌 كابلات</button>
+  <button class="section-btn" onclick="setCategory('chargers')">⚡ شواحن</button>
+  <button class="section-btn" onclick="setCategory('smartwatches')">⌚ ساعات ذكية</button>
 </div>
 
 <!-- Products -->
@@ -225,28 +225,5 @@ function applyFilters(){
 renderProducts();
 </script>
 
-</body>
-</html>function setCategory(cat){
-  CURRENT_CATEGORY=cat;
-  renderProducts();
-}
-
-function applyFilters(){
-  renderProducts();
-}
-
-// تحميل المنتجات عند فتح الصفحة
-renderProducts();
-</script>
-</body>
-</html>}
-
-function applyFilters(){
-  renderProducts();
-}
-
-// تحميل المنتجات عند فتح الصفحة
-renderProducts();
-</script>
 </body>
 </html>
