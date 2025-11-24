@@ -41,11 +41,13 @@ footer{background:#0d6efd;color:#fff;padding:20px;margin-top:50px;text-align:cen
 </div>
 
 <div class="container text-center mt-4">
+  <!-- الأقسام -->
   <button class="filter-btn" onclick="setCategory('all')">كل المنتجات</button>
   <button class="filter-btn" onclick="setCategory('mobiles')">موبايلات</button>
   <button class="filter-btn" onclick="setCategory('bluetooth')">سماعات بلوتوث</button>
   <button class="filter-btn" onclick="setCategory('cables')">كابلات</button>
   <button class="filter-btn" onclick="setCategory('chargers')">شواحن</button>
+  <button class="filter-btn" onclick="setCategory('smartwatches')">ساعات ذكية</button> <!-- مثال قسم جديد -->
 </div>
 
 <div class="container mt-5">
@@ -57,16 +59,17 @@ footer{background:#0d6efd;color:#fff;padding:20px;margin-top:50px;text-align:cen
 </footer>
 
 <script>
-const WA_PHONE = '963934090901';
+const WA_PHONE = '963934090901'; // رقم الواتساب
 let CURRENT_CATEGORY = 'all';
 
-// المنتجات هنا يمكنك تعديلها مباشرة
+// المنتجات الثابتة، أضف منتجات جديدة هنا بنفس الصيغة
 const PRODUCTS = [
   {name:"Samsung S22",price:"550$",category:"mobiles",image:"https://i.ibb.co/VcxDPkS7/IMG-20251123-121257.jpg",description:"هاتف ذكي مميز"},
   {name:"iPhone 14",price:"800$",category:"mobiles",image:"https://i.ibb.co/album/iPhone14.jpg",description:"الأحدث من آبل"},
   {name:"Fast Charger 25W",price:"12$",category:"chargers",image:"https://i.ibb.co/album/charger.jpg",description:"شاحن سريع"},
   {name:"Type C Cable",price:"5$",category:"cables",image:"https://i.ibb.co/album/cable.jpg",description:"كابل Type-C"},
-  {name:"Bluetooth Headset",price:"15$",category:"bluetooth",image:"https://i.ibb.co/album/bluetooth.jpg",description:"سماعة بلوتوث عالية الجودة"}
+  {name:"Bluetooth Headset",price:"15$",category:"bluetooth",image:"https://i.ibb.co/album/bluetooth.jpg",description:"سماعة بلوتوث عالية الجودة"},
+  {name:"Apple Watch 8",price:"400$",category:"smartwatches",image:"https://i.ibb.co/album/watch.jpg",description:"ساعة ذكية من آبل"} // منتج القسم الجديد
 ];
 
 function escapeHtml(str){
@@ -111,6 +114,16 @@ function setCategory(cat){
   CURRENT_CATEGORY=cat;
   renderProducts();
 }
+
+function applyFilters(){
+  renderProducts();
+}
+
+// تحميل المنتجات عند فتح الصفحة
+renderProducts();
+</script>
+</body>
+</html>}
 
 function applyFilters(){
   renderProducts();
