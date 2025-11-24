@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Admin - تكنو تل (Upload Images + Categories)</title>
+<title>Admin - تكنو تل</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -17,13 +17,13 @@
 <body>
 <div class="container">
   <div class="card p-4">
-    <h3>لوحة إدارة — تكنو تل (رفع صور + أقسام + مزامنة)</h3>
-    <p class="muted">تنويه أمني: الصق توكن GitHub هنا **محلياً فقط**. لا تشاركه مع أي أحد. إذا أظهرته للآخرين فقم بإلغائه فوراً.</p>
+    <h3>لوحة إدارة — تكنو تل</h3>
+    <p class="muted">الصق توكن GitHub هنا **محلياً فقط**. لا تشاركه مع أي أحد.</p>
 
     <!-- Login -->
     <div id="loginBox">
       <div class="row g-2">
-        <div class="col-md-6"><input id="pwd" type="password" class="form-control" placeholder="كلمة المرور (غيّرها فوراً)"></div>
+        <div class="col-md-6"><input id="pwd" type="password" class="form-control" placeholder="كلمة المرور"></div>
         <div class="col-md-3"><button class="btn btn-primary w-100" onclick="login()">دخول</button></div>
         <div class="col-md-3"><button class="btn btn-outline-secondary w-100" onclick="showTokenHelp()">مساعدة التوكن</button></div>
       </div>
@@ -35,9 +35,9 @@
       <!-- Token -->
       <div class="mb-3 row align-items-center">
         <div class="col-md-7">
-          <input id="ghToken" class="form-control" placeholder="الصق GitHub Personal Access Token هنا (يُخزن محلياً)">
+          <input id="ghToken" class="form-control" placeholder="الصق GitHub Token هنا">
         </div>
-        <div class="col-md-2"><button class="btn btn-success w-100" onclick="saveToken()">حفظ التوكن محلياً</button></div>
+        <div class="col-md-2"><button class="btn btn-success w-100" onclick="saveToken()">حفظ التوكن</button></div>
         <div class="col-md-3"><button class="btn btn-danger w-100" onclick="clearToken()">حذف التوكن</button></div>
       </div>
 
@@ -45,30 +45,13 @@
 
       <!-- Categories management -->
       <div class="card p-3 mb-3">
-        <h5>الأقسام (Categories)</h5>
+        <h5>الأقسام</h5>
         <div class="row g-2 align-items-center mb-2">
-          <div class="col-md-6"><input id="newCategory" class="form-control" placeholder="أدخل اسم القسم بالإنجليزية (مثال: mobiles)"></div>
-          <div class="col-md-3"><input id="newCategoryLabel" class="form-control" placeholder="التسمية العربية (مثال: موبايلات)"></div>
+          <div class="col-md-6"><input id="newCategory" class="form-control" placeholder="اسم القسم بالإنجليزية (id)"></div>
+          <div class="col-md-3"><input id="newCategoryLabel" class="form-control" placeholder="التسمية العربية"></div>
           <div class="col-md-3"><button class="btn btn-primary w-100" onclick="addCategory()">أضف قسم</button></div>
         </div>
         <div id="categoriesList" class="mb-1"></div>
-      </div>
-
-      <!-- Image upload -->
-      <div class="card p-3 mb-3">
-        <h5>رفع صورة مباشرة</h5>
-        <div class="row g-2 align-items-center mb-2">
-          <div class="col-md-6">
-            <input id="imageFile" type="file" accept="image/*" class="form-control">
-          </div>
-          <div class="col-md-3">
-            <input id="imageFilename" class="form-control" placeholder="اسم ملف (اختياري) - مثال: s22.jpg">
-          </div>
-          <div class="col-md-3">
-            <button class="btn btn-success w-100" onclick="uploadImage()">رفع الصورة</button>
-          </div>
-        </div>
-        <div class="muted">بعد الرفع سيظهر رابط الصورة تلقائياً ويمكن استخدامه في المنتج.</div>
       </div>
 
       <!-- Add product -->
@@ -77,7 +60,7 @@
         <div class="row g-2 align-items-center">
           <div class="col-md-3"><input id="pName" class="form-control" placeholder="اسم المنتج"></div>
           <div class="col-md-2"><input id="pPrice" class="form-control" placeholder="السعر"></div>
-          <div class="col-md-4"><input id="pImage" class="form-control" placeholder="رابط الصورة (استخدم رفع الصور أعلاه أو URL)"></div>
+          <div class="col-md-4"><input id="pImage" class="form-control" placeholder="رابط الصورة (استخدم ibb.co)"></div>
           <div class="col-md-2">
             <select id="pCategory" class="form-control"></select>
           </div>
@@ -95,970 +78,219 @@
       <hr>
       <div class="d-flex gap-2 mb-2">
         <button class="btn btn-outline-secondary" onclick="manualSync()">مزامنة الآن</button>
-        <button class="btn btn-outline-dark" onclick="downloadJSON()">تحميل products.json</button>
-        <button class="btn btn-outline-info" onclick="copyJSON()">نسخ JSON</button>
+        <button class="btn btn-outline-dark" onclick="downloadJSON()">تحميل JSON</button>
       </div>
-
-      <div id="statusBox"></div>
-      <div class="muted mt-2">بعد أي تعديل يتم مزامنة الملفات: <code>products.json</code> و <code>categories.json</code> ورفع ملفات الصور داخل مجلد <code>images/</code> في الريبو.</div>
     </div>
   </div>
 </div>
 
 <script>
-/* ---------- إعدادات الحساب والريبو ---------- */
 const GITHUB_USER = 'redcresce';
 const GITHUB_REPO = 'Techno1';
-const PRODUCTS_PATH = 'products.json';
-const CATEGORIES_PATH = 'categories.json';
-const IMAGES_FOLDER = 'images';
-let ADMIN_PASSWORD = 't3chn0tel'; // غيّره فوراً في الكود أو بعد النسخ
-
-/* ---------- حالة محلية ---------- */
-let categories = []; // array of {id: 'mobiles', label: 'موبايلات'}
-let products = [];
-const tokenKey = 'techno_admin_token_v1';
-let token = localStorage.getItem(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) || '';
-
-/* ---------- DOM ---------- */
-const syncStatus = document.getElementById('syncStatus');
-const statusBox = document.getElementById('statusBox');
-const categoriesList = document.getElementById('categoriesList');
-const pCategorySelect = document.getElementById('pCategory');
-const ghTokenInput = document.getElementById('ghToken');
-const listDiv = document.getElementById('list');
-
-/* ---------- Helpers ---------- */
-function setStatus(msg, ok=true) {
-  syncStatus.textContent = msg;
-  syncStatus.style.color = ok ? 'green' : 'red';
-  statusBox.innerHTML = `<div class="alert ${ok ? 'alert-success' : 'alert-danger'}">${msg}</div>`;
-  setTimeout(()=>{ statusBox.innerHTML = ''; }, 3500);
-}
-function showTokenHelp(){
-  alert('لإنشاء GitHub Personal Access Token:\n1) GitHub -> Settings -> Developer settings -> Personal access tokens -> Tokens (classic) -> Generate new token.\n2) اختر scope: public_repo (لو الريبو عام) أو repo لو خاص.\n3) انسخ التوكن والصقه هنا. التوكن يخزن محلياً فقط.');
-}
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* ---------- Login ---------- */
-function login() {
-  const v = document.getElementById('pwd').value;
-  if (v === ADMIN_PASSWORD) {
-    document.getElementById('loginBox').style.display = 'none';
-    document.getElementById('adminUI').style.display = 'block';
-    ghTokenInput.value = token || '';
-    initAdmin();
-  } else alert('كلمة المرور خاطئة');
-}
-
-/* ---------- Token management ---------- */
-function saveToken(){
-  const t = ghTokenInput.value.trim();
-  if(!t){ alert('أدخل التوكن أولاً'); return; }
-  localStorage.setItem(tokenKey, t);
-  token = t;
-  setStatus('التوكن محفوظ محلياً. جاهز للمزامنة.', true);
-  initAdmin(); // reload data with token
-}
-function clearToken(){
-  localStorage.removeItem(tokenKey);
-  token = '';
-  ghTokenInput.value = '';
-  setStatus('تم حذف التوكن من المتصفح.', false);
-}
-
-/* ---------- GitHub helpers (GET content) ---------- */
-async function githubGetContent(path){
-  const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
-  const headers = token ? { Authorization: 'token ' + token } : {};
-  const res = await fetch(api + '?_=' + Date.now(), { headers });
-  if(res.status === 404) return null;
-  if(!res.ok) throw new Error('GitHub GET failed: ' + res.status);
-  const j = await res.json();
-  const sha = j.sha;
-  const content = atob(j.content.replace(/\n/g,'')); // utf-8 may need decoding
-  try { return { sha, data: JSON.parse(content) }; } catch(e){ return { sha, raw: content }; }
-}
-
-/* ---------- GitHub PUT (create/update file) ---------- */
-async function githubPutContent(path, contentStr, message, sha=null){
-  const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
-  const body = { message, content: btoa(unescape(encodeURIComponent(contentStr))) };
-  if(sha) body.sha = sha;
-  const res = await fetch(api, {
-    method: 'PUT',
-    headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if(!res.ok) {
-    const txt = await res.text();
-    throw new Error('GitHub PUT failed: ' + res.status + ' - ' + txt);
-  }
-  return await res.json();
-}
-
-/* ---------- Upload binary file (image) to images/ ---------- */
-function arrayBufferToBase64(buffer){
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
-
-async function uploadImage(){
-  const fileInput = document.getElementById('imageFile');
-  if(!fileInput.files || fileInput.files.length === 0){ alert('اختر ملف'); return; }
-  if(!token){ alert('ضع توكن GitHub أولاً وحفظه'); return; }
-
-  const file = fileInput.files[0];
-  const customName = (document.getElementById('imageFilename').value || '').trim();
-  const ext = file.name.split('.').pop().toLowerCase();
-  const safeExt = ext || 'jpg';
-  const timestamp = Date.now();
-  const filename = customName ? customName : `${timestamp}-${file.name.replace(/\s+/g,'_')}`;
-  const path = `${IMAGES_FOLDER}/${filename}`;
-
-  try{
-    setStatus('جارٍ رفع الصورة إلى GitHub...', true);
-
-    // read file as arraybuffer
-    const buffer = await file.arrayBuffer();
-    const base64 = arrayBufferToBase64(buffer);
-
-    // prepare PUT body for binary file
-    const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
-    const message = `Upload image ${filename} via admin panel (${new Date().toISOString()})`;
-    const putBody = { message, content: base64 };
-
-    const resp = await fetch(api, {
-      method: 'PUT',
-      headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify(putBody)
-    });
-
-    if(!resp.ok){
-      const txt = await resp.text();
-      throw new Error('فشل رفع الصورة: ' + resp.status + ' - ' + txt);
-    }
-
-    const j = await resp.json();
-    setStatus('تم رفع الصورة بنجاح. Commit: ' + (j.commit && j.commit.sha ? j.commit.sha.substring(0,7) : ''), true);
-
-    // image URL on GitHub Pages:
-    const imageUrl = `https://${GITHUB_USER}.github.io/${GITHUB_REPO}/${IMAGES_FOLDER}/${encodeURIComponent(filename)}`;
-    // ضع الرابط في حقل الصورة جاهز للاستخدام
-    document.getElementById('pImage').value = imageUrl;
-    // Clear input
-    fileInput.value = '';
-    document.getElementById('imageFilename').value = '';
-    // Refresh products/categories from GitHub to reflect new file
-    await loadAllFromGitHub();
-    return imageUrl;
-
-  }catch(err){
-    console.error(err);
-    setStatus('خطأ أثناء رفع الصورة: ' + (err.message||err), false);
-    alert('فشل رفع الصورة: ' + (err.message||err));
-    throw err;
-  }
-}
-
-/* ---------- Load products & categories from GitHub ---------- */
-async function loadAllFromGitHub(){
-  try{
-    // load categories
-    const catRes = await githubGetContent(CATEGORIES_PATH);
-    if(catRes && catRes.data) categories = catRes.data;
-    else categories = [ { id:'mobiles', label:'موبايلات' }, { id:'bluetooth', label:'سماعات بلوتوث' }, { id:'cables', label:'كابلات' }, { id:'chargers', label:'شواحن' } ];
-
-    // load products
-    const prodRes = await githubGetContent(PRODUCTS_PATH);
-    products = (prodRes && prodRes.data) ? prodRes.data : [];
-
-    renderCategories();
-    renderList();
-    setStatus('تم تحميل البيانات من GitHub', true);
-  }catch(err){
-    console.error(err);
-    setStatus('فشل تحميل من GitHub - سيعمل محلياً', false);
-    // use defaults
-    if(!categories || categories.length===0) categories = [ { id:'mobiles', label:'موبايلات' }, { id:'bluetooth', label:'سماعات بلوتوث' }, { id:'cables', label:'كابلات' }, { id:'chargers', label:'شواحن' } ];
-    if(!products) products = [];
-    renderCategories();
-    renderList();
-  }
-}
-
-/* ---------- Render categories UI ---------- */
-function renderCategories(){
-  // list view
-  categoriesList.innerHTML = '';
-  categories.forEach((c, i) => {
-    const div = document.createElement('div');
-    div.className = 'd-flex align-items-center justify-content-between mb-1';
-    div.innerHTML = `<div><b>${escapeHtml(c.label)}</b> <small class="muted">(${escapeHtml(c.id)})</small></div>
-      <div>
-        <button class="btn btn-sm btn-warning btn-small me-1" onclick="renameCategory(${i})">تعديل</button>
-        <button class="btn btn-sm btn-danger btn-small" onclick="deleteCategory(${i})">حذف</button>
-      </div>`;
-    categoriesList.appendChild(div);
-  });
-
-  // populate select
-  pCategorySelect.innerHTML = '';
-  categories.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id; opt.textContent = c.label;
-    pCategorySelect.appendChild(opt);
-  });
-}
-
-/* ---------- Categories CRUD ---------- */
-function addCategory(){
-  const id = (document.getElementById('newCategory').value || '').trim();
-  const label = (document.getElementById('newCategoryLabel').value || '').trim();
-  if(!id || !label) { alert('ادخل id والقسم بالعربية'); return; }
-  if(categories.some(c=>c.id === id)){ alert('القسم موجود سابقاً'); return; }
-  categories.push({ id, label });
-  renderCategories();
-  autoSyncCategories();
-  document.getElementById('newCategory').value = '';
-  document.getElementById('newCategoryLabel').value = '';
-}
-function renameCategory(i){
-  const c = categories[i];
-  const newLabel = prompt('التسمية العربية للقسم:', c.label);
-  if(newLabel === null) return;
-  const newId = prompt('الـ id للقسم (لا تغيّر إلا لو تعرف لماذا):', c.id);
-  if(newId === null) return;
-  categories[i] = { id: newId.trim(), label: newLabel.trim() };
-  renderCategories();
-  autoSyncCategories();
-}
-function deleteCategory(i){
-  if(!confirm('حذف القسم؟ المنتجات لا تُحذف لكن قد لا يظهر قسم لها.')) return;
-  categories.splice(i,1);
-  renderCategories();
-  autoSyncCategories();
-}
-
-/* ---------- Products CRUD ---------- */
-function renderList(){
-  listDiv.innerHTML = '';
-  const q = (document.getElementById('pSearch').value || '').toLowerCase();
-  const filtered = products.filter(p => {
-    return (!q) || (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q));
-  });
-  if(filtered.length === 0) {
-    listDiv.innerHTML = '<div class="text-muted">لا توجد منتجات للعرض.</div>';
-    return;
-  }
-  filtered.forEach((p, i) => {
-    const div = document.createElement('div');
-    div.className = 'card p-2 mb-2';
-    div.innerHTML = `
-      <div class="row align-items-center">
-        <div class="col-2"><img src="${p.image}" class="img-thumb" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=64 height=48><rect width=100% height=100% fill=%23ddd/></svg>'" /></div>
-        <div class="col-6">
-          <b>${escapeHtml(p.name)}</b><br><small class="text-muted">${escapeHtml(p.price)} • ${escapeHtml(p.category)}</small><br>
-          <small class="muted">${p.description ? escapeHtml(p.description) : ''}</small>
-        </div>
-        <div class="col-4 text-end">
-          <button class="btn btn-sm btn-warning btn-small me-1" onclick="editProduct(${i})">تعديل</button>
-          <button class="btn btn-sm btn-danger btn-small" onclick="deleteProduct(${i})">حذف</button>
-        </div>
-      </div>`;
-    listDiv.appendChild(div);
-  });
-}
-
-function addProduct(){
-  const name = (document.getElementById('pName').value || '').trim();
-  const price = (document.getElementById('pPrice').value || '').trim();
-  const image = (document.getElementById('pImage').value || '').trim();
-  const categoryVal = (document.getElementById('pCategory').value || '').trim();
-  if(!name || !image){ alert('الاسم والرابط للصور مطلوبان'); return; }
-  products.push({ name, price, image, category: categoryVal, description: '' });
-  renderList();
-  autoSyncProducts();
-  document.getElementById('pName').value = '';
-  document.getElementById('pPrice').value = '';
-  document.getElementById('pImage').value = '';
-}
-
-function editProduct(i){
-  const p = products[i];
-  const newName = prompt('اسم المنتج:', p.name);
-  if(newName === null) return;
-  const newPrice = prompt('السعر:', p.price);
-  if(newPrice === null) return;
-  const newImage = prompt('رابط الصورة:', p.image);
-  if(newImage === null) return;
-  const newCat = prompt('القسم (اكتب id القسم):', p.category);
-  if(newCat === null) return;
-  const newDesc = prompt('الوصف (اختياري):', p.description || '');
-  if(newDesc === null) return;
-  products[i] = { name: newName.trim(), price: newPrice.trim(), image: newImage.trim(), category: newCat.trim(), description: newDesc.trim() };
-  renderList();
-  autoSyncProducts();
-}
-
-function deleteProduct(i){
-  if(!confirm('حذف المنتج نهائياً؟')) return;
-  products.splice(i,1);
-  renderList();
-  autoSyncProducts();
-}
-
-/* ---------- Auto sync (debounced) ---------- */
-let autoTimer = null;
-function autoSyncProducts(){
-  if(!token){ setStatus('التوكن غير موجود. احفظ التوكن للمزامنة.', false); return; }
-  if(autoTimer) clearTimeout(autoTimer);
-  autoTimer = setTimeout(()=>{ pushProductsToGitHub().catch(()=>{}); }, 800);
-}
-function autoSyncCategories(){
-  if(!token){ setStatus('التوكن غير موجود. احفظ التوكن للمزامنة.', false); return; }
-  if(autoTimer) clearTimeout(autoTimer);
-  autoTimer = setTimeout(()=>{ pushCategoriesToGitHub().catch(()=>{}); }, 800);
-}
-
-/* ---------- Push products.json ---------- */
-async function pushProductsToGitHub(){
-  try{
-    setStatus('جارٍ مزامنة products.json ...', true);
-    // get current sha if exists
-    const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${PRODUCTS_PATH}`;
-    const headers = { Authorization: 'token ' + token };
-    const getResp = await fetch(api + '?_=' + Date.now(), { headers });
-    let sha = null;
-    if(getResp.status === 200){ const j = await getResp.json(); sha = j.sha; }
-    else if(getResp.status === 404) sha = null;
-    else if(getResp.status === 401 || getResp.status === 403) throw new Error('صلاحيات التوكن غير كافية أو توكن خاطئ.');
-    else { throw new Error('خطأ عند جلب SHA: ' + getResp.status); }
-
-    const bodyStr = JSON.stringify(products, null, 2);
-    const putBody = { message: `Auto-update products.json via admin (${new Date().toISOString()})`, content: btoa(unescape(encodeURIComponent(bodyStr))) };
-    if(sha) putBody.sha = sha;
-    const putResp = await fetch(api, { method:'PUT', headers: headers, body: JSON.stringify(putBody) });
-    if(!putResp.ok){ const txt = await putResp.text(); throw new Error('فشل رفع products.json: ' + putResp.status + ' - ' + txt); }
-    const putJson = await putResp.json();
-    setStatus('تمت مزامنة products.json — commit: ' + (putJson.commit && putJson.commit.sha ? putJson.commit.sha.substring(0,7) : ''), true);
-    return putJson;
-  }catch(err){ console.error(err); setStatus('فشل مزامنة products.json: ' + (err.message||err), false); throw err; }
-}
-
-/* ---------- Push categories.json ---------- */
-async function pushCategoriesToGitHub(){
-  try{
-    setStatus('جارٍ مزامنة categories.json ...', true);
-    const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${CATEGORIES_PATH}`;
-    const headers = { Authorization: 'token ' + token };
-    const getResp = await fetch(api + '?_=' + Date.now(), { headers });
-    let sha = null;
-    if(getResp.status === 200){ const j = await getResp.json(); sha = j.sha; }
-    else if(getResp.status === 404) sha = null;
-    else if(getResp.status === 401 || getResp.statuconst CATEGORIES_PATH = 'categories.json';
-const IMAGES_FOLDER = 'images';
-let ADMIN_PASSWORD = 't3chn0tel'; // غيّره فوراً في الكود أو بعد النسخ
-
-/* ---------- حالة محلية ---------- */
-let categories = []; // array of {id: 'mobiles', label: 'موبايلات'}
-let products = [];
+let ADMIN_PASSWORD = 't3chn0tel';
+let categories = [];
+let products = {};
 const tokenKey = 'techno_admin_token_v1';
 let token = localStorage.getItem(tokenKey) || '';
 
-/* ---------- DOM ---------- */
 const syncStatus = document.getElementById('syncStatus');
-const statusBox = document.getElementById('statusBox');
 const categoriesList = document.getElementById('categoriesList');
 const pCategorySelect = document.getElementById('pCategory');
 const ghTokenInput = document.getElementById('ghToken');
 const listDiv = document.getElementById('list');
 
-/* ---------- Helpers ---------- */
-function setStatus(msg, ok=true) {
+function setStatus(msg, ok=true){
   syncStatus.textContent = msg;
-  syncStatus.style.color = ok ? 'green' : 'red';
-  statusBox.innerHTML = `<div class="alert ${ok ? 'alert-success' : 'alert-danger'}">${msg}</div>`;
-  setTimeout(()=>{ statusBox.innerHTML = ''; }, 3500);
+  syncStatus.style.color = ok?'green':'red';
 }
-function showTokenHelp(){
-  alert('لإنشاء GitHub Personal Access Token:\n1) GitHub -> Settings -> Developer settings -> Personal access tokens -> Tokens (classic) -> Generate new token.\n2) اختر scope: public_repo (لو الريبو عام) أو repo لو خاص.\n3) انسخ التوكن والصقه هنا. التوكن يخزن محلياً فقط.');
-}
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-/* ---------- Login ---------- */
-function login() {
-  const v = document.getElementById('pwd').value;
-  if (v === ADMIN_PASSWORD) {
-    document.getElementById('loginBox').style.display = 'none';
-    document.getElementById('adminUI').style.display = 'block';
+function showTokenHelp(){
+  alert('اصنع GitHub Personal Access Token -> public_repo. الصقه هنا فقط في المتصفح.');
+}
+
+function login(){
+  if(document.getElementById('pwd').value === ADMIN_PASSWORD){
+    document.getElementById('loginBox').style.display='none';
+    document.getElementById('adminUI').style.display='block';
     ghTokenInput.value = token || '';
     initAdmin();
-  } else alert('كلمة المرور خاطئة');
+  }else alert('كلمة المرور خاطئة');
 }
 
-/* ---------- Token management ---------- */
 function saveToken(){
   const t = ghTokenInput.value.trim();
   if(!t){ alert('أدخل التوكن أولاً'); return; }
-  localStorage.setItem(tokenKey, t);
+  localStorage.setItem(tokenKey,t);
   token = t;
-  setStatus('التوكن محفوظ محلياً. جاهز للمزامنة.', true);
-  initAdmin(); // reload data with token
+  setStatus('التوكن محفوظ محلياً');
+  initAdmin();
 }
+
 function clearToken(){
   localStorage.removeItem(tokenKey);
   token = '';
-  ghTokenInput.value = '';
-  setStatus('تم حذف التوكن من المتصفح.', false);
+  ghTokenInput.value='';
+  setStatus('تم حذف التوكن',false);
 }
 
-/* ---------- GitHub helpers (GET content) ---------- */
-async function githubGetContent(path){
-  const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
-  const headers = token ? { Authorization: 'token ' + token } : {};
-  const res = await fetch(api + '?_=' + Date.now(), { headers });
-  if(res.status === 404) return null;
-  if(!res.ok) throw new Error('GitHub GET failed: ' + res.status);
-  const j = await res.json();
-  const sha = j.sha;
-  const content = atob(j.content.replace(/\n/g,'')); // utf-8 may need decoding
-  try { return { sha, data: JSON.parse(content) }; } catch(e){ return { sha, raw: content }; }
-}
-
-/* ---------- GitHub PUT (create/update file) ---------- */
-async function githubPutContent(path, contentStr, message, sha=null){
-  const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
-  const body = { message, content: btoa(unescape(encodeURIComponent(contentStr))) };
-  if(sha) body.sha = sha;
-  const res = await fetch(api, {
-    method: 'PUT',
-    headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if(!res.ok) {
-    const txt = await res.text();
-    throw new Error('GitHub PUT failed: ' + res.status + ' - ' + txt);
-  }
-  return await res.json();
-}
-
-/* ---------- Upload binary file (image) to images/ ---------- */
-function arrayBufferToBase64(buffer){
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
-
-async function uploadImage(){
-  const fileInput = document.getElementById('imageFile');
-  if(!fileInput.files || fileInput.files.length === 0){ alert('اختر ملف'); return; }
-  if(!token){ alert('ضع توكن GitHub أولاً وحفظه'); return; }
-
-  const file = fileInput.files[0];
-  const customName = (document.getElementById('imageFilename').value || '').trim();
-  const ext = file.name.split('.').pop().toLowerCase();
-  const safeExt = ext || 'jpg';
-  const timestamp = Date.now();
-  const filename = customName ? customName : `${timestamp}-${file.name.replace(/\s+/g,'_')}`;
-  const path = `${IMAGES_FOLDER}/${filename}`;
-
-  try{
-    setStatus('جارٍ رفع الصورة إلى GitHub...', true);
-
-    // read file as arraybuffer
-    const buffer = await file.arrayBuffer();
-    const base64 = arrayBufferToBase64(buffer);
-
-    // prepare PUT body for binary file
-    const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
-    const message = `Upload image ${filename} via admin panel (${new Date().toISOString()})`;
-    const putBody = { message, content: base64 };
-
-    const resp = await fetch(api, {
-      method: 'PUT',
-      headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify(putBody)
-    });
-
-    if(!resp.ok){
-      const txt = await resp.text();
-      throw new Error('فشل رفع الصورة: ' + resp.status + ' - ' + txt);
-    }
-
-    const j = await resp.json();
-    setStatus('تم رفع الصورة بنجاح. Commit: ' + (j.commit && j.commit.sha ? j.commit.sha.substring(0,7) : ''), true);
-
-    // image URL on GitHub Pages:
-    const imageUrl = `https://${GITHUB_USER}.github.io/${GITHUB_REPO}/${IMAGES_FOLDER}/${encodeURIComponent(filename)}`;
-    // ضع الرابط في حقل الصورة جاهز للاستخدام
-    document.getElementById('pImage').value = imageUrl;
-    // Clear input
-    fileInput.value = '';
-    document.getElementById('imageFilename').value = '';
-    // Refresh products/categories from GitHub to reflect new file
-    await loadAllFromGitHub();
-    return imageUrl;
-
-  }catch(err){
-    console.error(err);
-    setStatus('خطأ أثناء رفع الصورة: ' + (err.message||err), false);
-    alert('فشل رفع الصورة: ' + (err.message||err));
-    throw err;
-  }
-}
-
-/* ---------- Load products & categories from GitHub ---------- */
-async function loadAllFromGitHub(){
-  try{
-    // load categories
-    const catRes = await githubGetContent(CATEGORIES_PATH);
-    if(catRes && catRes.data) categories = catRes.data;
-    else categories = [ { id:'mobiles', label:'موبايلات' }, { id:'bluetooth', label:'سماعات بلوتوث' }, { id:'cables', label:'كابلات' }, { id:'chargers', label:'شواحن' } ];
-
-    // load products
-    const prodRes = await githubGetContent(PRODUCTS_PATH);
-    products = (prodRes && prodRes.data) ? prodRes.data : [];
-
-    renderCategories();
-    renderList();
-    setStatus('تم تحميل البيانات من GitHub', true);
-  }catch(err){
-    console.error(err);
-    setStatus('فشل تحميل من GitHub - سيعمل محلياً', false);
-    // use defaults
-    if(!categories || categories.length===0) categories = [ { id:'mobiles', label:'موبايلات' }, { id:'bluetooth', label:'سماعات بلوتوث' }, { id:'cables', label:'كابلات' }, { id:'chargers', label:'شواحن' } ];
-    if(!products) products = [];
-    renderCategories();
-    renderList();
-  }
-}
-
-/* ---------- Render categories UI ---------- */
+/* ---------- Categories ---------- */
 function renderCategories(){
-  // list view
-  categoriesList.innerHTML = '';
-  categories.forEach((c, i) => {
-    const div = document.createElement('div');
-    div.className = 'd-flex align-items-center justify-content-between mb-1';
-    div.innerHTML = `<div><b>${escapeHtml(c.label)}</b> <small class="muted">(${escapeHtml(c.id)})</small></div>
+  categoriesList.innerHTML='';
+  pCategorySelect.innerHTML='';
+  categories.forEach(c=>{
+    const div=document.createElement('div');
+    div.className='d-flex align-items-center justify-content-between mb-1';
+    div.innerHTML=`<div><b>${c.label}</b> <small class="muted">(${c.id})</small></div>
       <div>
-        <button class="btn btn-sm btn-warning btn-small me-1" onclick="renameCategory(${i})">تعديل</button>
-        <button class="btn btn-sm btn-danger btn-small" onclick="deleteCategory(${i})">حذف</button>
+      <button class="btn btn-sm btn-warning btn-small me-1" onclick="renameCategory('${c.id}')">تعديل</button>
+      <button class="btn btn-sm btn-danger btn-small" onclick="deleteCategory('${c.id}')">حذف</button>
       </div>`;
     categoriesList.appendChild(div);
-  });
-
-  // populate select
-  pCategorySelect.innerHTML = '';
-  categories.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id; opt.textContent = c.label;
+    const opt=document.createElement('option');
+    opt.value=c.id; opt.textContent=c.label;
     pCategorySelect.appendChild(opt);
   });
 }
 
-/* ---------- Categories CRUD ---------- */
 function addCategory(){
-  const id = (document.getElementById('newCategory').value || '').trim();
-  const label = (document.getElementById('newCategoryLabel').value || '').trim();
-  if(!id || !label) { alert('ادخل id والقسم بالعربية'); return; }
-  if(categories.some(c=>c.id === id)){ alert('القسم موجود سابقاً'); return; }
-  categories.push({ id, label });
+  const id=(document.getElementById('newCategory').value||'').trim();
+  const label=(document.getElementById('newCategoryLabel').value||'').trim();
+  if(!id||!label){ alert('ادخل id والقسم'); return; }
+  if(categories.some(c=>c.id===id)){ alert('القسم موجود'); return; }
+  categories.push({id,label});
   renderCategories();
-  autoSyncCategories();
-  document.getElementById('newCategory').value = '';
-  document.getElementById('newCategoryLabel').value = '';
-}
-function renameCategory(i){
-  const c = categories[i];
-  const newLabel = prompt('التسمية العربية للقسم:', c.label);
-  if(newLabel === null) return;
-  const newId = prompt('الـ id للقسم (لا تغيّر إلا لو تعرف لماذا):', c.id);
-  if(newId === null) return;
-  categories[i] = { id: newId.trim(), label: newLabel.trim() };
-  renderCategories();
-  autoSyncCategories();
-}
-function deleteCategory(i){
-  if(!confirm('حذف القسم؟ المنتجات لا تُحذف لكن قد لا يظهر قسم لها.')) return;
-  categories.splice(i,1);
-  renderCategories();
-  autoSyncCategories();
+  products[id]=[];
+  saveCategoryJSON(id);
+  document.getElementById('newCategory').value='';
+  document.getElementById('newCategoryLabel').value='';
 }
 
-/* ---------- Products CRUD ---------- */
+function renameCategory(id){
+  const cat=categories.find(c=>c.id===id);
+  const newLabel=prompt('التسمية العربية للقسم',cat.label);
+  if(newLabel!==null){ cat.label=newLabel; renderCategories(); saveCategoryJSON(id); }
+}
+
+function deleteCategory(id){
+  if(!confirm('حذف القسم؟')) return;
+  categories=categories.filter(c=>c.id!==id);
+  renderCategories();
+  delete products[id];
+  deleteCategoryJSON(id);
+}
+
+/* ---------- Products ---------- */
 function renderList(){
-  listDiv.innerHTML = '';
-  const q = (document.getElementById('pSearch').value || '').toLowerCase();
-  const filtered = products.filter(p => {
-    return (!q) || (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q));
-  });
-  if(filtered.length === 0) {
-    listDiv.innerHTML = '<div class="text-muted">لا توجد منتجات للعرض.</div>';
-    return;
-  }
-  filtered.forEach((p, i) => {
-    const div = document.createElement('div');
-    div.className = 'card p-2 mb-2';
-    div.innerHTML = `
-      <div class="row align-items-center">
-        <div class="col-2"><img src="${p.image}" class="img-thumb" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=64 height=48><rect width=100% height=100% fill=%23ddd/></svg>'" /></div>
-        <div class="col-6">
-          <b>${escapeHtml(p.name)}</b><br><small class="text-muted">${escapeHtml(p.price)} • ${escapeHtml(p.category)}</small><br>
-          <small class="muted">${p.description ? escapeHtml(p.description) : ''}</small>
-        </div>
+  listDiv.innerHTML='';
+  const q=(document.getElementById('pSearch').value||'').toLowerCase();
+  Object.keys(products).forEach(cat=>{
+    products[cat].forEach((p,i)=>{
+      if(q && !p.name.toLowerCase().includes(q)) return;
+      const div=document.createElement('div');
+      div.className='card p-2 mb-2';
+      div.innerHTML=`<div class="row align-items-center">
+        <div class="col-2"><img src="${p.image}" class="img-thumb" /></div>
+        <div class="col-6"><b>${p.name}</b><br><small class="text-muted">${p.price} • ${cat}</small></div>
         <div class="col-4 text-end">
-          <button class="btn btn-sm btn-warning btn-small me-1" onclick="editProduct(${i})">تعديل</button>
-          <button class="btn btn-sm btn-danger btn-small" onclick="deleteProduct(${i})">حذف</button>
-        </div>
-      </div>`;
-    listDiv.appendChild(div);
-  });
-}
-
-function addProduct(){
-  const name = (document.getElementById('pName').value || '').trim();
-  const price = (document.getElementById('pPrice').value || '').trim();
-  const image = (document.getElementById('pImage').value || '').trim();
-  const categoryVal = (document.getElementById('pCategory').value || '').trim();
-  if(!name || !image){ alert('الاسم والرابط للصور مطلوبان'); return; }
-  products.push({ name, price, image, category: categoryVal, description: '' });
-  renderList();
-  autoSyncProducts();
-  document.getElementById('pName').value = '';
-  document.getElementById('pPrice').value = '';
-  document.getElementById('pImage').value = '';
-}
-
-function editProduct(i){
-  const p = products[i];
-  const newName = prompt('اسم المنتج:', p.name);
-  if(newName === null) return;
-  const newPrice = prompt('السعر:', p.price);
-  if(newPrice === null) return;
-  const newImage = prompt('رابط الصورة:', p.image);
-  if(newImage === null) return;
-  const newCat = prompt('القسم (اكتب id القسم):', p.category);
-  if(newCat === null) return;
-  const newDesc = prompt('الوصف (اختياري):', p.description || '');
-  if(newDesc === null) return;
-  products[i] = { name: newName.trim(), price: newPrice.trim(), image: newImage.trim(), category: newCat.trim(), description: newDesc.trim() };
-  renderList();
-  autoSyncProducts();
-}
-
-function deleteProduct(i){
-  if(!confirm('حذف المنتج نهائياً؟')) return;
-  products.splice(i,1);
-  renderList();
-  autoSyncProducts();
-}
-
-/* ---------- Auto sync (debounced) ---------- */
-let autoTimer = null;
-function autoSyncProducts(){
-  if(!token){ setStatus('التوكن غير موجود. احفظ التوكن للمزامنة.', false); return; }
-  if(autoTimer) clearTimeout(autoTimer);
-  autoTimer = setTimeout(()=>{ pushProductsToGitHub().catch(()=>{}); }, 800);
-}
-function autoSyncCategories(){
-  if(!token){ setStatus('التوكن غير موجود. احفظ التوكن للمزامنة.', false); return; }
-  if(autoTimer) clearTimeout(autoTimer);
-  autoTimer = setTimeout(()=>{ pushCategoriesToGitHub().catch(()=>{}); }, 800);
-}
-
-/* ---------- Push products.json ---------- */
-async function pushProductsToGitHub(){
-  try{
-    setStatus('جارٍ مزامنة products.json ...', true);
-    // get current sha if exists
-    const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${PRODUCTS_PATH}`;
-    const headers = { Authorization: 'token ' + token };
-    const getResp = await fetch(api + '?_=' + Date.now(), { headers });
-    let sha = null;
-    if(getResp.status === 200){ const j = await getResp.json(); sha = j.sha; }
-    else if(getResp.status === 404) sha = null;
-    else if(getResp.status === 401 || getResp.status === 403) throw new Error('صلاحيات التوكن غير كافية أو توكن خاطئ.');
-    else { throw new Error('خطأ عند جلب SHA: ' + getResp.status); }
-
-    const bodyStr = JSON.stringify(products, null, 2);
-    const putBody = { message: `Auto-update products.json via admin (${new Date().toISOString()})`, content: btoa(unescape(encodeURIComponent(bodyStr))) };
-    if(sha) putBody.sha = sha;
-    const putResp = await fetch(api, { method:'PUT', headers: headers, body: JSON.stringify(putBody) });
-    if(!putResp.ok){ const txt = await putResp.text(); throw new Error('فشل رفع products.json: ' + putResp.status + ' - ' + txt); }
-    const putJson = await putResp.json();
-    setStatus('تمت مزامنة products.json — commit: ' + (putJson.commit && putJson.commit.sha ? putJson.commit.sha.substring(0,7) : ''), true);
-    return putJson;
-  }catch(err){ console.error(err); setStatus('فشل مزامنة products.json: ' + (err.message||err), false); throw err; }
-}
-
-/* ---------- Push categories.json ---------- */
-async function pushCategoriesToGitHub(){
-  try{
-    setStatus('جارٍ مزامنة categories.json ...', true);
-    const api = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${CATEGORIES_PATH}`;
-    const headers = { Authorization: 'token ' + token };
-    const getResp = await fetch(api + '?_=' + Date.now(), { headers });
-    let sha = null;
-    if(getResp.status === 200){ const j = await getResp.json(); sha = j.sha; }
-    else if(getResp.status === 404) sha = null;
-    else if(getResp.status === 401 || getResp.status === 403) throw new Error('صلاح/* ========== Helpers ========= */
-function setStatus(msg, ok=true){
-  syncStatus.textContent = msg;
-  syncStatus.style.color = ok ? 'green' : 'red';
-  statusBox.innerHTML = `<div class="alert ${ok ? 'alert-success' : 'alert-danger'}">${msg}</div>`;
-  setTimeout(()=>{ statusBox.innerHTML = '' }, 3500);
-}
-function showTokenHelp(){
-  alert('لإنشاء GitHub Personal Access Token:\n1) افتح GitHub -> Settings -> Developer settings -> Personal access tokens -> Tokens (classic) -> Generate new token.\n2) اختر صلاحية repo (أو public_repo لو الريبو عام فقط).\n3) انسخ التوكن والصقه هنا. التوكن سيبقى على جهازك فقط.');
-}
-
-/* ======== Login ======= */
-function login(){
-  const v = document.getElementById('pwd').value;
-  if(v === ADMIN_PASSWORD){
-    loginBox.style.display = 'none';
-    adminUI.style.display = 'block';
-    ghTokenInput.value = token || '';
-    initAdmin();
-  } else {
-    alert('كلمة المرور خاطئة');
-  }
-}
-
-/* ======== Token Storage ======= */
-function saveToken(){
-  const t = ghTokenInput.value.trim();
-  if(!t){ alert('أدخل التوكن أولاً'); return; }
-  localStorage.setItem(tokenKey, t);
-  token = t;
-  setStatus('التوكن محفوظ محلياً. جاهز للمزامنة.', true);
-  // حاول التحميل والمزامنة الآن
-  loadAndRender().then(()=>syncToGitHubIfNeeded());
-}
-function clearToken(){
-  localStorage.removeItem(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);
-  token = '';
-  ghTokenInput.value = '';
-  setStatus('تم حذف التوكن من المتصفح.', false);
-}
-
-/* ======== Load products from GitHub (or empty) ======= */
-async function loadProductsFromGitHub(){
-  const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
-  try{
-    const r = await fetch(apiUrl + '?_=' + Date.now(), { headers: token ? { Authorization: 'token ' + token } : {} });
-    if(r.status === 404){
-      // file not found -> return empty
-      return { items: [], sha: null };
-    }
-    if(!r.ok) throw new Error('فشل جلب products.json: ' + r.status);
-    const json = await r.json();
-    const sha = json.sha;
-    const content = atob(json.content.replace(/\n/g, ''));
-    const data = JSON.parse(content || '[]');
-    return { items: data, sha };
-  }catch(err){
-    console.error(err);
-    throw err;
-  }
-}
-
-/* ======== Render list in admin UI ======= */
-function renderList(){
-  listDiv.innerHTML = '';
-  if(!products || products.length === 0){
-    listDiv.innerHTML = '<div class="text-muted">لا توجد منتجات بعد.</div>';
-    return;
-  }
-  products.forEach((p, i) => {
-    const card = document.createElement('div');
-    card.className = 'card p-2 mb-2';
-    card.innerHTML = `
-      <div class="row align-items-center">
-        <div class="col-2"><img src="${p.image}" class="img-thumb" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=64 height=48><rect width=100% height=100% fill=%23ddd/></svg>'" /></div>
-        <div class="col-6">
-          <b>${escapeHtml(p.name)}</b><br><small class="text-muted">${escapeHtml(p.price)} • ${escapeHtml(p.category)}</small><br>
-          <small class="muted">${p.description ? escapeHtml(p.description) : ''}</small>
-        </div>
-        <div class="col-4 text-end">
-          <button class="btn btn-sm btn-warning btn-small" onclick="editProduct(${i})">تعديل</button>
-          <button class="btn btn-sm btn-danger btn-small" onclick="deleteProduct(${i})">حذف</button>
-        </div>
-      </div>`;
-    listDiv.appendChild(card);
-  });
-}
-
-/* ======== CRUD ======= */
-function addProduct(){
-  const name = document.getElementById('pName').value.trim();
-  const price = document.getElementById('pPrice').value.trim();
-  const image = document.getElementById('pImage').value.trim();
-  const category = document.getElementById('pCategory').value;
-  if(!name || !image){ alert('يرجى إدخال اسم ورابط صورة'); return; }
-  const newP = { name, price, image, category, description: '' };
-  products.push(newP);
-  renderList();
-  autoSync(); // مزامنة تلقائية
-  clearForm();
-}
-function clearForm(){ document.getElementById('pName').value=''; document.getElementById('pPrice').value=''; document.getElementById('pImage').value=''; }
-function editProduct(i){
-  const p = products[i];
-  const newName = prompt('اسم المنتج:', p.name);
-  if(newName === null) return;
-  const newPrice = prompt('السعر:', p.price);
-  if(newPrice === null) return;
-  const newImage = prompt('رابط الصورة:', p.image);
-  if(newImage === null) return;
-  const newCat = prompt('القسم (mobiles / bluetooth / cables / chargers):', p.category);
-  if(newCat === null) return;
-  const newDesc = prompt('الوصف (اختياري):', p.description || '');
-  if(newDesc === null) return;
-  products[i] = { name: newName.trim(), price: newPrice.trim(), image: newImage.trim(), category: newCat.trim(), description: newDesc.trim() };
-  renderList();
-  autoSync();
-}
-function deleteProduct(i){
-  if(!confirm('حذف المنتج نهائياً؟')) return;
-  products.splice(i,1);
-  renderList();
-  autoSync();
-}
-
-/* ======== Auto sync logic ======= */
-let autoTimer = null;
-function autoSync(){
-  // مزامنة فورية بعد أي تغيير (يمكن تجميعها بفاصل لو حبيت)
-  if(!token){
-    setStatus('التوكن غير موجود. احفظ التوكن ليتم المزامنة.', false);
-    return;
-  }
-  // debounce سريع: لو تغييرات سريعة، نجمعها خلال 700ms
-  if(autoTimer) clearTimeout(autoTimer);
-  autoTimer = setTimeout(()=>{ pushProductsToGitHub(products).catch(err=>console.error(err)); }, 700);
-}
-
-/* ======== GitHub interaction ======= */
-async function pushProductsToGitHub(items){
-  try{
-    setStatus('جارٍ المزامنة مع GitHub...', true);
-    // احصل على SHA الحالي (لو موجود)
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
-    let sha = null;
-    // طلب GET مع التوكن
-    const getResp = await fetch(apiUrl + '?_=' + Date.now(), { headers: { Authorization: 'token ' + token } });
-    if(getResp.status === 200){
-      const j = await getResp.json();
-      sha = j.sha;
-    } else if(getResp.status === 404){
-      sha = null; // سننشئ الملف
-    } else if(getResp.status === 401 || getResp.status === 403){
-      throw new Error('خطأ صلاحيات أو توكن غير صالح (401/403). تأكد من صلاحيات التوكن (repo/public_repo).');
-    } else {
-      // قد يكون خطأ آخر؛ حاول قراءته
-      const txt = await getResp.text();
-      throw new Error('فشل جلب SHA: ' + getResp.status + ' - ' + txt);
-    }
-
-    // جهز المحتوى
-    const bodyStr = JSON.stringify(items, null, 2);
-    const base64 = btoa(unescape(encodeURIComponent(bodyStr))); // دعم UTF-8
-
-    const putBody = {
-      message: `Auto-update products.json via admin panel (${new Date().toISOString()})`,
-      content: base64
-    };
-    if(sha) putBody.sha = sha;
-
-    const putResp = await fetch(apiUrl, {
-      method: 'PUT',
-      headers: {
-        Authorization: 'token ' + token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(putBody)
+          <button class="btn btn-sm btn-warning btn-small me-1" onclick="editProduct('${cat}',${i})">تعديل</button>
+          <button class="btn btn-sm btn-danger btn-small" onclick="deleteProduct('${cat}',${i})">حذف</button>
+        </div></div>`;
+      listDiv.appendChild(div);
     });
-
-    if(!putResp.ok){
-      const errText = await putResp.text();
-      throw new Error('فشل رفع الملف: ' + putResp.status + ' — ' + errText);
-    }
-
-    const putJson = await putResp.json();
-    setStatus('تمت المزامنة بنجاح. Commit: ' + putJson.commit.sha, true);
-    return putJson;
-  }catch(err){
-    console.error(err);
-    setStatus('فشل المزامنة: ' + (err.message||err), false);
-    throw err;
-  }
+  });
 }
 
-/* ======== Manual sync & utilities ======= */
-async function manualSync(){
-  if(!token){ alert('التوكن غير موجود'); return; }
-  try{
-    await pushProductsToGitHub(products);
-  }catch(e){
-    console.error(e);
-  }
-}
-function copyJSON(){ navigator.clipboard.writeText(JSON.stringify(products, null, 2)).then(()=>alert('تم نسخ JSON')); }
-function downloadJSON(){ const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(products, null, 2)); const a = document.createElement('a'); a.href = dataStr; a.download = 'products.json'; document.body.appendChild(a); a.click(); a.remove(); }
-
-/* ======== Initial load & sync helper ======= */
-async function loadAndRender(){
-  try{
-    const res = await loadProductsFromGitHub();
-    products = res.items || [];
-    renderList();
-    setStatus('تم تحميل products.json من GitHub', true);
-  }catch(err){
-    products = [];
-    renderList();
-    setStatus('لم يتمكن من تحميل products.json (ستعمل بملف محلي مؤقت)', false);
-  }
-}
-
-/* ======== Run when admin opened ======= */
-function initAdmin(){
-  // ضع التوكن الموجود (لو أي)
-  token = localStorage.getItem(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) || '';
-  ghTokenInput.value = token;
-  loadAndRender();
-}
-
-/* ======== small helpers ======= */
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* ======== Auto init: لو مسجل دخول سابقاً (optional) ======= */
-// (لا نفعل تسجيل تلقائي للحماية؛ انت تضغط دخول يدوياً)
-</script>
-</body>
-</html>  if(newPrice===null) return;
-  const newImage = prompt('رابط الصورة', p.image);
-  if(newImage===null) return;
-  const newCat = prompt('القسم (mobiles / bluetooth / cables / chargers)', p.category);
-  if(newCat===null) return;
-  products[i] = {name:newName, price:newPrice, image:newImage, category:newCat};
+function addProduct(){
+  const name=(document.getElementById('pName').value||'').trim();
+  const price=(document.getElementById('pPrice').value||'').trim();
+  const image=(document.getElementById('pImage').value||'').trim();
+  const cat=(document.getElementById('pCategory').value||'').trim();
+  if(!name||!image){ alert('الاسم والرابط مطلوب'); return; }
+  if(!products[cat]) products[cat]=[];
+  products[cat].push({name,price,image});
   renderList();
+  saveProductJSON(cat);
+  document.getElementById('pName').value='';
+  document.getElementById('pPrice').value='';
+  document.getElementById('pImage').value='';
 }
 
-function deleteProduct(i){ if(!confirm('حذف المنتج؟')) return; products.splice(i,1); renderList(); }
+function editProduct(cat,index){
+  const p=products[cat][index];
+  const n=prompt('اسم المنتج',p.name); if(n===null) return;
+  const pr=prompt('السعر',p.price); if(pr===null) return;
+  const im=prompt('رابط الصورة',p.image); if(im===null) return;
+  products[cat][index]={name:n,price:pr,image:im};
+  renderList();
+  saveProductJSON(cat);
+}
 
-function copyJSON(){ const txt = JSON.stringify(products, null, 2); navigator.clipboard.writeText(txt).then(()=>alert('تم نسخ JSON')); }
+function deleteProduct(cat,index){
+  if(!confirm('حذف المنتج؟')) return;
+  products[cat].splice(index,1);
+  renderList();
+  saveProductJSON(cat);
+}
 
-function downloadJSON(){ const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(products, null, 2)); const a = document.createElement('a'); a.setAttribute('href', dataStr); a.setAttribute('download', 'products.json'); document.body.appendChild(a); a.click(); a.remove(); }
+/* ---------- GitHub JSON sync (products per category) ---------- */
+async function saveProductJSON(cat){
+  if(!token) return;
+  const path=`${cat}.json`;
+  const body=JSON.stringify(products[cat],null,2);
+  const api=`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
+  try{
+    const res=await fetch(api+'?_='+Date.now(),{headers:{Authorization:'token '+token}});
+    let sha=null;
+    if(res.ok){ const j=await res.json(); sha=j.sha; }
+    const put=await fetch(api,{method:'PUT',headers:{Authorization:'token '+token,'Content-Type':'application/json'},body:JSON.stringify({message:`Update ${cat}.json`,content:btoa(unescape(encodeURIComponent(body))),sha})});
+    if(!put.ok) console.error('GitHub PUT failed',await put.text());
+  }catch(e){console.error(e);}
+}
 
-function escapeHtml(str){ if(!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+async function saveCategoryJSON(cat){
+  if(!token) return;
+  const path=`categories.json`;
+  const body=JSON.stringify(categories,null,2);
+  const api=`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
+  try{
+    const res=await fetch(api+'?_='+Date.now(),{headers:{Authorization:'token '+token}});
+    let sha=null; if(res.ok){const j=await res.json();sha=j.sha;}
+    await fetch(api,{method:'PUT',headers:{Authorization:'token '+token,'Content-Type':'application/json'},body:JSON.stringify({message:`Update categories.json`,content:btoa(unescape(encodeURIComponent(body))),sha})});
+  }catch(e){console.error(e);}
+}
+
+async function deleteCategoryJSON(cat){if(!token) return; const api=`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${cat}.json`; try{await fetch(api,{method:'DELETE',headers:{Authorization:'token '+token,'Content-Type':'application/json'},body:JSON.stringify({message:`Delete ${cat}.json`})});}catch(e){console.error(e);}}
+
+/* ---------- Manual Sync ---------- */
+function manualSync(){
+  categories.forEach(c=>saveProductJSON(c.id));
+  saveCategoryJSON();
+  setStatus('تمت المزامنة يدوياً');
+}
+
+/* ---------- Init ---------- */
+function initAdmin(){
+  renderCategories();
+  // Load products from GitHub (per category)
+  categories.forEach(async c=>{
+    if(!token) return;
+    try{
+      const res=await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${c.id}.json`,{headers:{Authorization:'token '+token}});
+      if(res.ok){ const j=await res.json(); const content=atob(j.content.replace(/\n/g,'')); products[c.id]=JSON.parse(content); renderList(); }
+      else products[c.id]=[];
+    }catch(e){products[c.id]=[];}
+  });
+}
+
+function downloadJSON(){
+  const blob=new Blob([JSON.stringify(products,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='products_all.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 </script>
 </body>
 </html>
