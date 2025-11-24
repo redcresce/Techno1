@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Samsung S22",
+    "price": "550$",
+    "image": "https://i.ibb.co/VcxDPkS7/IMG-20251123-121257.jpg",
+    "category": "mobiles",
+    "description": "جهاز بحالة ممتازة - شاشة 6.1"
+  },
+  {
+    "name": "iPhone 14",
+    "price": "800$",
+    "image": "https://i.ibb.co/album/iPhone14.jpg",
+    "category": "mobiles",
+    "description": "أصلي - سعة 128GB"
+  },
+  {
+    "name": "سماعة بلوتوث",
+    "price": "15$",
+    "image": "https://i.ibb.co/album/bluetooth.jpg",
+    "category": "bluetooth",
+    "description": "صوت نقي وعازل للضوضاء"
+  }
+]
