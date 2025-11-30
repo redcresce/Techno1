@@ -9,108 +9,152 @@
 <style>
 body{
   font-family:'Cairo',sans-serif;
-  margin:0;
-  padding:0;
+  margin:0; padding:0;
   background: linear-gradient(-45deg, #f44336, #ff7961, #f06292, #ff8a80);
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
 }
-
-/* Animate background */
 @keyframes gradientBG {
   0%{background-position:0% 50%;}
   50%{background-position:100% 50%;}
   100%{background-position:0% 50%;}
 }
-
-.navbar{
-  background:rgba(183,28,28,0.9);
-  padding:20px 0;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
-}
-.navbar-brand{
-  color:#fff!important;
-  font-size:30px;
-  font-weight:700;
-}
-
-.hero{
-  background:rgba(211,47,47,0.95);
-  color:#fff;
-  padding:60px 20px;
-  border-radius:25px;
-  text-align:center;
-  margin:20px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.15);
-}
+.navbar{ background:rgba(183,28,28,0.9); padding:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.navbar-brand{ color:#fff!important; font-size:30px; font-weight:700;}
+.hero{ background:rgba(211,47,47,0.95); color:#fff; padding:60px 20px; border-radius:25px; text-align:center; margin:20px; box-shadow:0 6px 20px rgba(0,0,0,0.15);}
 .hero h1{ font-size:40px; font-weight:700; margin-bottom:15px;}
 .hero p{ font-size:20px; }
-
-#searchInput{
-  border-radius:25px;
-  border:2px solid #b71c1c;
-  padding:15px;
-  font-size:18px;
-  margin-top:20px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.05);
-}
-
-/* Section icons */
-.section-btn{
-  background:#b71c1c;
-  color:#fff;
-  border:none;
-  padding:10px 18px;
-  border-radius:15px;
-  margin:5px;
-  font-size:16px;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  transition:.3s;
-}
-.section-btn:hover{
-  background:#7f0000;
-  transform:translateY(-2px);
-}
-
-/* Product card */
-.product-card{
-  border-radius:20px;
-  overflow:hidden;
-  background:#fff;
-  box-shadow:0 6px 20px rgba(0,0,0,0.08);
-  transition:.4s;
-}
-.product-card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 10px 30px rgba(0,0,0,0.15);
-}
-.product-card img{
-  width:100%;
-  height:320px;
-  object-fit:cover;
-  border-bottom:2px solid #f0f0f0;
-}
-.product-card h4{
-  font-size:22px;
-  font-weight:700;
-  margin-bottom:10px;
-}
-.price{
-  font-size:20px;
-  color:#d32f2f;
-  font-weight:700;
-}
-.btn-whatsapp{
-  background:#25D366;
-  color:#fff;
-  font-size:18px;
-  border-radius:12px;
-  transition:.3s;
-}
+#searchInput{ border-radius:25px; border:2px solid #b71c1c; padding:15px; font-size:18px; margin-top:20px; box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+.section-btn{ background:#b71c1c; color:#fff; border:none; padding:10px 18px; border-radius:15px; margin:5px; font-size:16px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:.3s;}
+.section-btn:hover{ background:#7f0000; transform:translateY(-2px);}
+.product-card{ border-radius:20px; overflow:hidden; background:#fff; box-shadow:0 6px 20px rgba(0,0,0,0.08); transition:.4s;}
+.product-card:hover{ transform:translateY(-8px); box-shadow:0 10px 30px rgba(0,0,0,0.15);}
+.product-card img{ width:100%; height:320px; object-fit:cover; border-bottom:2px solid #f0f0f0;}
+.product-card h4{ font-size:22px; font-weight:700; margin-bottom:10px;}
+.price{ font-size:20px; color:#d32f2f; font-weight:700;}
+.btn-whatsapp{ background:#25D366; color:#fff; font-size:18px; border-radius:12px; transition:.3s;}
 .btn-whatsapp:hover{ background:#1ebe57; }
+footer{ background:#7f0000; color:#fff; padding:25px; margin-top:50px; text-align:center; font-weight:600;}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container"><a class="navbar-brand" href="#">تكنو تل</a></div>
+</nav>
+
+<div class="container">
+  <div class="hero shadow">
+    <h1>تسوق أحدث الأجهزة</h1>
+    <p>أفضل الأسعار – اطلب بسهولة عبر الواتساب</p>
+  </div>
+</div>
+
+<div class="container mt-3">
+  <input id="searchInput" type="text" class="form-control form-control-lg text-center" placeholder="ابحث عن جهاز..." oninput="applyFilters()">
+</div>
+
+<div class="container text-center mt-4">
+  <button class="section-btn" onclick="setCategory('all')">📦 كل المنتجات</button>
+  <button class="section-btn" onclick="setCategory('mobiles')">📱 موبايلات</button>
+  <button class="section-btn" onclick="setCategory('bluetooth')">🎧 سماعات بلوتوث</button>
+  <button class="section-btn" onclick="setCategory('cables')">🔌 كابلات</button>
+  <button class="section-btn" onclick="setCategory('chargers')">⚡ شواحن</button>
+  <button class="section-btn" onclick="setCategory('wired')">🎧 سماعات سلكية</button>
+</div>
+
+<div class="container mt-5">
+  <div class="row g-4" id="productList"></div>
+</div>
+
+<footer>© 2025 تكنو تل — جميع الحقوق محفوظة</footer>
+
+<script>
+const WA_PHONE = '963934090901';
+let CURRENT_CATEGORY = 'all';
+
+const PRODUCTS = [
+  // سماعات بلوتوث
+  {"name":"بفلة بلوتوث GTS-1835","price":"35000","img":"https://i.ibb.co/placeholder1.jpg","category":"bluetooth","description":"سماعات بفلة بلوتوث عالية الجودة"},
+  {"name":"سماعات بلوتوث MZ-08m","price":"35000","img":"https://i.ibb.co/placeholder2.jpg","category":"bluetooth","description":"سماعات بلوتوث صغيرة ومميزة"},
+  {"name":"سماعات بلوتوث P9","price":"35000","img":"https://i.ibb.co/placeholder3.jpg","category":"bluetooth","description":"سماعات بلوتوث مريحة وطويلة العمر"},
+  {"name":"سماعات بلوتوث MZ-08R","price":"35000","img":"https://i.ibb.co/placeholder4.jpg","category":"bluetooth","description":"سماعات بلوتوث عالية الوضوح"},
+  {"name":"سماعات بلوتوث F9-5","price":"45000","img":"https://i.ibb.co/placeholder5.jpg","category":"bluetooth","description":"سماعات بلوتوث مميزة وعازلة للضوضاء"},
+  {"name":"سماعات بلوتوث ANC/ENC","price":"100000","img":"https://i.ibb.co/placeholder6.jpg","category":"bluetooth","description":"سماعات بلوتوث مع تقنيات إلغاء الضوضاء"},
+  {"name":"سماعات بلوتوث M10","price":"30000","img":"https://i.ibb.co/placeholder7.jpg","category":"bluetooth","description":"سماعات بلوتوث صغيرة ومناسبة للسفر"},
+  {"name":"مايكروفون بلوتوث WS-858","price":"35000","img":"https://i.ibb.co/placeholder8.jpg","category":"bluetooth","description":"مايكروفون لاسلكي بلوتوث عالي الجودة"},
+  {"name":"ميكروفون لاسلكي SX26","price":"190000","img":"https://i.ibb.co/placeholder9.jpg","category":"bluetooth","description":"ميكروفون لاسلكي احترافي"},
+  {"name":"ميكروفون لاسلكي K21","price":"120000","img":"https://i.ibb.co/placeholder10.jpg","category":"bluetooth","description":"ميكروفون لاسلكي ممتاز للأستوديو"},
+  // شواحن
+  {"name":"رأسية شحن صغيرة","price":"10000","img":"https://i.ibb.co/placeholder11.jpg","category":"chargers","description":"رأسية شحن صغيرة وفعالة"},
+  {"name":"شاحن 35W PD Adapter Type-C","price":"65000","img":"https://i.ibb.co/placeholder12.jpg","category":"chargers","description":"شاحن سريع بقوة 35 واط"},
+  {"name":"شاحن 45W PD Adapter Type-C","price":"75000","img":"https://i.ibb.co/placeholder13.jpg","category":"chargers","description":"شاحن سريع بقوة 45 واط"},
+  {"name":"شاحن ساعة For Watch","price":"20000","img":"https://i.ibb.co/placeholder14.jpg","category":"chargers","description":"شاحن مخصص للساعات الذكية"},
+  {"name":"جهاز تعديل FM-10 وشاحن سيارة 3 في 1","price":"45000","img":"https://i.ibb.co/placeholder15.jpg","category":"chargers","description":"جهاز تعديل إف إم مع شاحن سيارة لاسلكي"},
+  {"name":"شاحن سيارة OTL","price":"17000","img":"https://i.ibb.co/placeholder16.jpg","category":"chargers","description":"شاحن سيارة متعدد الاستخدامات"},
+  // كابلات وحوامل
+  {"name":"حامل هاتف مكتبي JE008","price":"35000","img":"https://i.ibb.co/placeholder17.jpg","category":"cables","description":"حامل هاتف ثابت ومتين"},
+  {"name":"وصلة شحن Type-C C02T","price":"14000","img":"https://i.ibb.co/placeholder18.jpg","category":"cables","description":"وصلة Type-C فعالة وسريعة"},
+  {"name":"وصلة شحن Type-C JA010","price":"10000","img":"https://i.ibb.co/placeholder19.jpg","category":"cables","description":"وصلة Type-C قصيرة ومناسبة للسفر"},
+  {"name":"وصلة شحن آيفون LS891","price":"30000","img":"https://i.ibb.co/placeholder20.jpg","category":"cables","description":"وصلة Lightning عالية الجودة"},
+  {"name":"وصلة C08L Type-C إلى Lightning","price":"35000","img":"https://i.ibb.co/placeholder21.jpg","category":"cables","description":"تحويل Type-C إلى Lightning"},
+  {"name":"وصلة شحن Type-C D01T","price":"10000","img":"https://i.ibb.co/placeholder22.jpg","category":"cables","description":"وصلة Type-C صغيرة وعملية"},
+  {"name":"وصلة شحن آيفون C09L","price":"12000","img":"https://i.ibb.co/placeholder23.jpg","category":"cables","description":"وصلة Lightning قصيرة ومرنة"},
+  {"name":"وصلة شحن Type-C LS441","price":"22000","img":"https://i.ibb.co/placeholder24.jpg","category":"cables","description":"وصلة Type-C قوية ومناسبة للشحن السريع"},
+  {"name":"وصلة Type-C إلى Type-C C04C","price":"15000","img":"https://i.ibb.co/placeholder25.jpg","category":"cables","description":"وصلة Type-C للطاقة العالية"},
+  {"name":"وصلة Type-C إلى Type-C GC-08","price":"35000","img":"https://i.ibb.co/placeholder26.jpg","category":"cables","description":"وصلة Type-C قوية للتحويل"},
+  {"name":"وصلة USB JA010","price":"10000","img":"https://i.ibb.co/placeholder27.jpg","category":"cables","description":"وصلة USB قياسية"},
+  {"name":"وصلة Type-C D08T","price":"12000","img":"https://i.ibb.co/placeholder28.jpg","category":"cables","description":"وصلة Type-C سريعة ومرنة"},
+  {"name":"وصلة USB C01V","price":"10000","img":"https://i.ibb.co/placeholder29.jpg","category":"cables","description":"وصلة USB قياسية"},
+  {"name":"وصلة USB JA025","price":"25000","img":"https://i.ibb.co/placeholder30.jpg","category":"cables","description":"وصلة USB طويلة ومرنة"},
+  {"name":"وصلة USB GC-10","price":"25000","img":"https://i.ibb.co/placeholder31.jpg","category":"cables","description":"وصلة USB عالية الجودة"},
+  {"name":"وصلة USB C06V","price":"14000","img":"https://i.ibb.co/placeholder32.jpg","category":"cables","description":"وصلة USB سريعة ومرنة"},
+  // سماعات سلكية
+  {"name":"سماعات سلكية SAMSUNG","price":"8000","img":"https://i.ibb.co/placeholder33.jpg","category":"wired","description":"سماعات سلكية بسيطة وعملية"},
+  {"name":"سماعات سلكية SX-002","price":"15000","img":"https://i.ibb.co/placeholder34.jpg","category":"wired","description":"سماعات سلكية صوت واضح"},
+  {"name":"سماعات سلكية JB-004","price":"15000","img":"https://i.ibb.co/placeholder35.jpg","category":"wired","description":"سماعات سلكية متينة"},
+  {"name":"سماعات سلكية D21","price":"15000","img":"https://i.ibb.co/placeholder36.jpg","category":"wired","description":"سماعات سلكية جودة ممتازة"},
+  {"name":"سماعات سلكية TE-002","price":"15000","img":"https://i.ibb.co/placeholder37.jpg","category":"wired","description":"سماعات سلكية عملية ومريحة"},
+  {"name":"سماعات سلكية AKG","price":"25000","img":"https://i.ibb.co/placeholder38.jpg","category":"wired","description":"سماعات سلكية عالية الجودة"}
+];
+
+function escapeHtml(str){ return str ? String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+
+function renderProducts(){
+  const container=document.getElementById('productList');
+  container.innerHTML='';
+  const query=document.getElementById('searchInput').value.toLowerCase();
+  const filtered=PRODUCTS.filter(p=>{
+    const matchCat=(CURRENT_CATEGORY==='all')||(p.category===CURRENT_CATEGORY);
+    const matchText=(!query)||(p.name.toLowerCase().includes(query))||(p.description && p.description.toLowerCase().includes(query));
+    return matchCat && matchText;
+  });
+  if(filtered.length===0){ container.innerHTML='<div class="col-12 text-center text-muted">لا توجد منتجات للعرض</div>'; return; }
+  filtered.forEach(p=>{
+    const col=document.createElement('div');
+    col.className='col-md-4 product-item';
+    col.innerHTML=`
+      <div class="product-card">
+        <img src="${p.img}" alt="${escapeHtml(p.name)}">
+        <div class="p-3">
+          <h4>${escapeHtml(p.name)}</h4>
+          <div class="price">${escapeHtml(p.price)} ل.س</div>
+          <p class="text-muted small">${escapeHtml(p.description)}</p>
+          <a href="https://wa.me/${WA_PHONE}?text=${encodeURIComponent('أريد شراء ' + p.name)}" target="_blank" class="btn btn-whatsapp w-100 mt-3">اطلب عبر واتساب</a>
+        </div>
+      </div>`;
+    container.appendChild(col);
+  });
+}
+
+function setCategory(cat){ CURRENT_CATEGORY=cat; renderProducts(); }
+function applyFilters(){ renderProducts(); }
+
+renderProducts();
+</script>
+
+</body>
+</html>.btn-whatsapp:hover{ background:#1ebe57; }
 
 footer{
   background:#7f0000;
