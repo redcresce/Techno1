@@ -169,12 +169,48 @@ const WA_PHONE = '963934090901';
 let CURRENT_CATEGORY = 'all';
 
 const PRODUCTS = [
-  {name:"Samsung S22",price:"550$",category:"mobiles",image:"https://i.ibb.co/VcxDPkS7/IMG-20251123-121257.jpg",description:"هاتف ذكي مميز"},
-  {name:"iPhone 14",price:"800$",category:"mobiles",image:"https://i.ibb.co/album/iPhone14.jpg",description:"الأحدث من آبل"},
-  {name:"Fast Charger 25W",price:"12$",category:"chargers",image:"https://i.ibb.co/album/charger.jpg",description:"شاحن سريع"},
-  {name:"Type C Cable",price:"5$",category:"cables",image:"https://i.ibb.co/album/cable.jpg",description:"كابل Type-C"},
-  {name:"Bluetooth Headset",price:"15$",category:"bluetooth",image:"https://i.ibb.co/album/bluetooth.jpg",description:"سماعة بلوتوث عالية الجودة"},
-  {name:"Apple Watch 8",price:"400$",category:"smartwatches",image:"https://i.ibb.co/album/watch.jpg",description:"ساعة ذكية من آبل"}
+  [
+  {"name":"بفلة بلوتوث GTS-1835","price":"35000","img":"https://i.ibb.co/placeholder1.jpg","category":"bluetooth","description":"سماعات بفلة بلوتوث عالية الجودة"},
+  {"name":"سماعات بلوتوث MZ-08m","price":"35000","img":"https://i.ibb.co/placeholder2.jpg","category":"bluetooth","description":"سماعات بلوتوث صغيرة ومميزة"},
+  {"name":"سماعات بلوتوث P9","price":"35000","img":"https://i.ibb.co/placeholder3.jpg","category":"bluetooth","description":"سماعات بلوتوث مريحة وطويلة العمر"},
+  {"name":"سماعات بلوتوث MZ-08R","price":"35000","img":"https://i.ibb.co/placeholder4.jpg","category":"bluetooth","description":"سماعات بلوتوث عالية الوضوح"},
+  {"name":"سماعات بلوتوث F9-5","price":"45000","img":"https://i.ibb.co/placeholder5.jpg","category":"bluetooth","description":"سماعات بلوتوث مميزة وعازلة للضوضاء"},
+  {"name":"سماعات بلوتوث ANC/ENC","price":"100000","img":"https://i.ibb.co/placeholder6.jpg","category":"bluetooth","description":"سماعات بلوتوث مع تقنيات إلغاء الضوضاء"},
+  {"name":"سماعات بلوتوث M10","price":"30000","img":"https://i.ibb.co/placeholder7.jpg","category":"bluetooth","description":"سماعات بلوتوث صغيرة ومناسبة للسفر"},
+  {"name":"مايكروفون بلوتوث WS-858","price":"35000","img":"https://i.ibb.co/placeholder8.jpg","category":"bluetooth","description":"مايكروفون لاسلكي بلوتوث عالي الجودة"},
+  {"name":"ميكروفون لاسلكي SX26","price":"190000","img":"https://i.ibb.co/placeholder9.jpg","category":"bluetooth","description":"ميكروفون لاسلكي احترافي"},
+  {"name":"ميكروفون لاسلكي K21","price":"120000","img":"https://i.ibb.co/placeholder10.jpg","category":"bluetooth","description":"ميكروفون لاسلكي ممتاز للأستوديو"},
+
+  {"name":"رأسية شحن صغيرة","price":"10000","img":"https://i.ibb.co/placeholder11.jpg","category":"chargers","description":"رأسية شحن صغيرة وفعالة"},
+  {"name":"شاحن 35W PD Adapter Type-C","price":"65000","img":"https://i.ibb.co/placeholder12.jpg","category":"chargers","description":"شاحن سريع بقوة 35 واط"},
+  {"name":"شاحن 45W PD Adapter Type-C","price":"75000","img":"https://i.ibb.co/placeholder13.jpg","category":"chargers","description":"شاحن سريع بقوة 45 واط"},
+  {"name":"شاحن ساعة For Watch","price":"20000","img":"https://i.ibb.co/placeholder14.jpg","category":"chargers","description":"شاحن مخصص للساعات الذكية"},
+  {"name":"جهاز تعديل FM-10 وشاحن سيارة 3 في 1","price":"45000","img":"https://i.ibb.co/placeholder15.jpg","category":"chargers","description":"جهاز تعديل إف إم مع شاحن سيارة لاسلكي"},
+  {"name":"شاحن سيارة OTL","price":"17000","img":"https://i.ibb.co/placeholder16.jpg","category":"chargers","description":"شاحن سيارة متعدد الاستخدامات"},
+
+  {"name":"حامل هاتف مكتبي JE008","price":"35000","img":"https://i.ibb.co/placeholder17.jpg","category":"cables","description":"حامل هاتف ثابت ومتين"},
+  {"name":"وصلة شحن Type-C C02T","price":"14000","img":"https://i.ibb.co/placeholder18.jpg","category":"cables","description":"وصلة Type-C فعالة وسريعة"},
+  {"name":"وصلة شحن Type-C JA010","price":"10000","img":"https://i.ibb.co/placeholder19.jpg","category":"cables","description":"وصلة Type-C قصيرة ومناسبة للسفر"},
+  {"name":"وصلة شحن آيفون LS891","price":"30000","img":"https://i.ibb.co/placeholder20.jpg","category":"cables","description":"وصلة Lightning عالية الجودة"},
+  {"name":"وصلة C08L Type-C إلى Lightning","price":"35000","img":"https://i.ibb.co/placeholder21.jpg","category":"cables","description":"تحويل Type-C إلى Lightning"},
+  {"name":"وصلة شحن Type-C D01T","price":"10000","img":"https://i.ibb.co/placeholder22.jpg","category":"cables","description":"وصلة Type-C صغيرة وعملية"},
+  {"name":"وصلة شحن آيفون C09L","price":"12000","img":"https://i.ibb.co/placeholder23.jpg","category":"cables","description":"وصلة Lightning قصيرة ومرنة"},
+  {"name":"وصلة شحن Type-C LS441","price":"22000","img":"https://i.ibb.co/placeholder24.jpg","category":"cables","description":"وصلة Type-C قوية ومناسبة للشحن السريع"},
+  {"name":"وصلة Type-C إلى Type-C C04C","price":"15000","img":"https://i.ibb.co/placeholder25.jpg","category":"cables","description":"وصلة Type-C للطاقة العالية"},
+  {"name":"وصلة Type-C إلى Type-C GC-08","price":"35000","img":"https://i.ibb.co/placeholder26.jpg","category":"cables","description":"وصلة Type-C قوية للتحويل"},
+  {"name":"وصلة USB JA010","price":"10000","img":"https://i.ibb.co/placeholder27.jpg","category":"cables","description":"وصلة USB قياسية"},
+  {"name":"وصلة Type-C D08T","price":"12000","img":"https://i.ibb.co/placeholder28.jpg","category":"cables","description":"وصلة Type-C سريعة ومرنة"},
+  {"name":"وصلة USB C01V","price":"10000","img":"https://i.ibb.co/placeholder29.jpg","category":"cables","description":"وصلة USB قياسية"},
+  {"name":"وصلة USB JA025","price":"25000","img":"https://i.ibb.co/placeholder30.jpg","category":"cables","description":"وصلة USB طويلة ومرنة"},
+  {"name":"وصلة USB GC-10","price":"25000","img":"https://i.ibb.co/placeholder31.jpg","category":"cables","description":"وصلة USB عالية الجودة"},
+  {"name":"وصلة USB C06V","price":"14000","img":"https://i.ibb.co/placeholder32.jpg","category":"cables","description":"وصلة USB سريعة ومرنة"},
+
+  {"name":"سماعات سلكية SAMSUNG","price":"8000","img":"https://i.ibb.co/placeholder33.jpg","category":"wired","description":"سماعات سلكية بسيطة وعملية"},
+  {"name":"سماعات سلكية SX-002","price":"15000","img":"https://i.ibb.co/placeholder34.jpg","category":"wired","description":"سماعات سلكية صوت واضح"},
+  {"name":"سماعات سلكية JB-004","price":"15000","img":"https://i.ibb.co/placeholder35.jpg","category":"wired","description":"سماعات سلكية متينة"},
+  {"name":"سماعات سلكية D21","price":"15000","img":"https://i.ibb.co/placeholder36.jpg","category":"wired","description":"سماعات سلكية جودة ممتازة"},
+  {"name":"سماعات سلكية TE-002","price":"15000","img":"https://i.ibb.co/placeholder37.jpg","category":"wired","description":"سماعات سلكية عملية ومريحة"},
+  {"name":"سماعات سلكية AKG","price":"25000","img":"https://i.ibb.co/placeholder38.jpg","category":"wired","description":"سماعات سلكية عالية الجودة"}
 ];
 
 function escapeHtml(str){
